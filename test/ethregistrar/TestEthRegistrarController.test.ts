@@ -46,6 +46,7 @@ async function fixture() {
     'ReverseRegistrar',
     [ensRegistry.address],
   )
+  await ensRegistry.write.setSubnodeCreator([reverseRegistrar.address, true])
 
   const defaultReverseRegistrar = await connection.viem.deployContract(
     'DefaultReverseRegistrar',
