@@ -139,8 +139,6 @@ export async function deployEnsStack(
   const walletClients = await connection.viem.getWalletClients()
 
   const owner = walletClients[1].account
-  await ensRegistry.write.setSubnodeCreator([root.address, true])
-  await ensRegistry.write.setSubnodeCreator([owner.address, true])
   await setRootNodeOwner({ ensRegistry, root })
   await root.write.setController([owner.address, true])
   await root.write.transferOwnership([owner.address])
