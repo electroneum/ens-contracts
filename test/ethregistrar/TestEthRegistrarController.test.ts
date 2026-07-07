@@ -38,6 +38,7 @@ const getDefaultRegistrationOptions =
 
 async function fixture() {
   const ensRegistry = await connection.viem.deployContract('ENSRegistry', [])
+  await ensRegistry.write.setSubnodeCreator([ownerAccount.address, true])
   const baseRegistrar = await connection.viem.deployContract(
     'BaseRegistrarImplementation',
     [ensRegistry.address, namehash('eth')],
