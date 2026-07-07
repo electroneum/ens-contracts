@@ -2,11 +2,12 @@ node_modules
 artifacts
 cache
 gasreport-*
-generated
 .env
 *.DS_Store
+node_modules
 build
 forge-cache
 out
-deployments/**/.pendingSafeTransactions
-deployments/localhost
+*.sh
+deployments
+generated
