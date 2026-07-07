@@ -6,6 +6,11 @@ export async function deployRegistryFixture(connection: NetworkConnection) {
   const owner = getAddress(walletClient.account.address)
   const ensRegistry = await connection.viem.deployContract('ENSRegistry')
 
+  // Whitelist the deployer as an authorised subnode creator so existing
+  // test fixtures (which call setSubnodeOwner directly to bootstrap test
+  // names) continue to work under the new subdomain-restriction logic.
+  await ensRegistry.write.setSubnodeCreator([owner, true])
+
   async function takeControl(name: string) {
     if (name) {
       const labels = name.split('.')
