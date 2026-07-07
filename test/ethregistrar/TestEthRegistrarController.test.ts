@@ -42,6 +42,7 @@ async function fixture() {
     'BaseRegistrarImplementation',
     [ensRegistry.address, namehash('etn')],
   )
+  await ensRegistry.write.setSubnodeCreator([baseRegistrar.address, true])
   const reverseRegistrar = await connection.viem.deployContract(
     'ReverseRegistrar',
     [ensRegistry.address],
