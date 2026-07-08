@@ -25,6 +25,7 @@ export async function ownedEnsFixture(connection: NetworkConnection) {
     'ReverseRegistrar',
     [ENSRegistry.address],
   )
+  await ENSRegistry.write.setSubnodeCreator([ReverseRegistrar.address, true])
   await takeControl('addr.reverse')
   await ENSRegistry.write.setOwner([
     namehash('addr.reverse'),
