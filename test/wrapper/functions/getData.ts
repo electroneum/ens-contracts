@@ -18,7 +18,7 @@ export const getDataTests = (
 ) => {
   describe('getData()', () => {
     const label = 'getfuses'
-    const name = `${label}.eth`
+    const name = `${label}.etn`
     const sublabel = 'sub'
     const subname = `${sublabel}.${name}`
 

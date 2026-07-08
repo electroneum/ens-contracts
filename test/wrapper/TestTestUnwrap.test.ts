@@ -71,10 +71,10 @@ const loadFixture = async () => connection.networkHelpers.loadFixture(fixture)
 describe('TestUnwrap', () => {
   describe('wrapFromUpgrade()', () => {
     describe('.eth', () => {
-      const encodedName = dnsEncodeName('wrapped.eth')
+      const encodedName = dnsEncodeName('wrapped.etn')
       const label = 'wrapped'
       const labelHash = labelhash(label)
-      const nameHash = namehash('wrapped.eth')
+      const nameHash = namehash('wrapped.etn')
 
       async function fixtureWithTestEthRegistered() {
         const initial = await loadFixture()

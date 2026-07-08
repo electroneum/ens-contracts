@@ -20,7 +20,7 @@ export const extendExpiryTests = (
 ) => {
   describe('extendExpiry()', () => {
     const label = 'fuses'
-    const name = `${label}.eth`
+    const name = `${label}.etn`
     const sublabel = 'sub'
     const subname = `${sublabel}.${name}`
 

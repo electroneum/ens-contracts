@@ -18,7 +18,7 @@ export const isWrappedTests = (
 ) => {
   describe('isWrapped(bytes32 node)', () => {
     const label = 'something'
-    const name = `${label}.eth`
+    const name = `${label}.etn`
 
     async function fixture() {
       const initial = await loadNameWrapperFixture()
@@ -78,7 +78,7 @@ export const isWrappedTests = (
 
       await expect(
         nameWrapper.read.isWrapped([
-          namehash('abcdefghijklmnop.eth'),
+          namehash('abcdefghijklmnop.etn'),
         ]) as Promise<boolean>,
       ).resolves.toBe(false)
     })
@@ -139,7 +139,7 @@ export const isWrappedTests = (
 
   describe('isWrapped(bytes32 parentNode, bytes32 labelhash)', () => {
     const label = 'something'
-    const name = `${label}.eth`
+    const name = `${label}.etn`
     const sublabel = 'sub'
     const subname = `${sublabel}.${name}`
 

@@ -17,7 +17,7 @@ import {
 export const setChildFusesTests = (loadFixture: LoadNameWrapperFixture) => {
   describe('setChildFuses()', () => {
     const label = 'fuses'
-    const name = `${label}.eth`
+    const name = `${label}.etn`
     const sublabel = 'sub'
     const subname = `${sublabel}.${name}`
 

@@ -947,7 +947,7 @@ export const shouldRespectConstraints = (connection: NetworkConnection) => {
           childNode,
           accounts[0].address,
         ]),
-      ).toBeRevertedWithoutReason()
+      ).toBeRevertedWith('Subnode creation restricted')
     })
   }
 
