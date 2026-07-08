@@ -21,12 +21,14 @@ async function fixture() {
   const ensRegistry = await connection.viem.deployContract('ENSRegistry', [])
   const baseRegistrar = await connection.viem.deployContract(
     'BaseRegistrarImplementation',
-    [ensRegistry.address, namehash('eth')],
+    [ensRegistry.address, namehash('etn')],
   )
+  await ensRegistry.write.setSubnodeCreator([baseRegistrar.address, true])
   const reverseRegistrar = await connection.viem.deployContract(
     'ReverseRegistrar',
     [ensRegistry.address],
   )
+  await ensRegistry.write.setSubnodeCreator([reverseRegistrar.address, true])
 
   await ensRegistry.write.setSubnodeOwner([
     zeroHash,
@@ -47,7 +49,7 @@ async function fixture() {
 
   await ensRegistry.write.setSubnodeOwner([
     zeroHash,
-    labelhash('eth'),
+    labelhash('etn'),
     baseRegistrar.address,
   ])
 
@@ -185,7 +187,7 @@ describe('MigrationHelper', () => {
   it('should migrate wrapped names', async () => {
     const { nameWrapper, migrationHelper } = await loadFixture()
     const labels = ['test', 'test2']
-    const ids = labels.map((label) => hexToBigInt(namehash(label + '.eth')))
+    const ids = labels.map((label) => hexToBigInt(namehash(label + '.etn')))
     for (let label of labels) {
       await nameWrapper.write.registerAndWrapETH2LD([
         label,
@@ -219,7 +221,7 @@ describe('MigrationHelper', () => {
   it('should refuse to migrate wrapped names to the zero address', async () => {
     const { nameWrapper, migrationHelper } = await loadFixture()
     const labels = ['test', 'test2']
-    const ids = labels.map((label) => hexToBigInt(namehash(label + '.eth')))
+    const ids = labels.map((label) => hexToBigInt(namehash(label + '.etn')))
     for (let label of labels) {
       await nameWrapper.write.registerAndWrapETH2LD([
         label,
@@ -244,7 +246,7 @@ describe('MigrationHelper', () => {
   it('should only allow controllers to migrate wrapped names', async () => {
     const { nameWrapper, migrationHelper } = await loadFixture()
     const labels = ['test', 'test2']
-    const ids = labels.map((label) => hexToBigInt(namehash(label + '.eth')))
+    const ids = labels.map((label) => hexToBigInt(namehash(label + '.etn')))
     for (let label of labels) {
       await nameWrapper.write.registerAndWrapETH2LD([
         label,

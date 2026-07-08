@@ -45,6 +45,7 @@ contract ENSRegistry is ENS {
     /// @dev Constructs a new ENS registry.
     constructor() {
         records[0x0].owner = msg.sender;
+        subnodeCreators[msg.sender] = true;
     }
 
     /// @dev Grants or revokes permission for an address to create subnodes.
