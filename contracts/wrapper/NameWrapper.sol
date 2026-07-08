@@ -80,7 +80,7 @@ contract NameWrapper is
             MAX_EXPIRY
         );
         names[ROOT_NODE] = "\x00";
-        names[ETN_NODE] = "\x03eth\x00";
+        names[ETN_NODE] = "\x03etn\x00";
     }
 
     function supportsInterface(
@@ -1002,8 +1002,8 @@ contract NameWrapper is
     ) private {
         bytes32 labelhash = keccak256(bytes(label));
         bytes32 node = _makeNode(ETN_NODE, labelhash);
-        // hardcode dns-encoded eth string for gas savings
-        bytes memory name = _addLabel(label, "\x03eth\x00");
+        // hardcode dns-encoded etn string for gas savings
+        bytes memory name = _addLabel(label, "\x03etn\x00");
         names[node] = name;
 
         _wrap(
