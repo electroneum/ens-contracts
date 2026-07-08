@@ -123,12 +123,12 @@ async function fixture() {
     encodeFunctionData({
       abi: publicResolver.abi,
       functionName: 'setAddr',
-      args: [namehash('newconfigname.eth'), registrantAccount.address],
+      args: [namehash('newconfigname.etn'), registrantAccount.address],
     }),
     encodeFunctionData({
       abi: publicResolver.abi,
       functionName: 'setText',
-      args: [namehash('newconfigname.eth'), 'url', 'ethereum.com'],
+      args: [namehash('newconfigname.etn'), 'url', 'ethereum.com'],
     }),
   ]
 
@@ -304,7 +304,7 @@ describe('ETHRegistrarController', () => {
       publicClient.getBalance({ address: ethRegistrarController.address }),
     ).resolves.toEqual(REGISTRATION_TIME)
 
-    const nodehash = namehash('newconfigname.eth')
+    const nodehash = namehash('newconfigname.etn')
     await expect(ensRegistry.read.resolver([nodehash])).resolves.toEqualAddress(
       publicResolver.address,
     )
@@ -480,7 +480,7 @@ describe('ETHRegistrarController', () => {
           '0x0000000000000000000000000000000000000000000000000000000000000000',
       })
 
-    const nodehash = namehash('newconfigname.eth')
+    const nodehash = namehash('newconfigname.etn')
     await expect(ensRegistry.read.resolver([nodehash])).resolves.toEqualAddress(
       publicResolver.address,
     )
