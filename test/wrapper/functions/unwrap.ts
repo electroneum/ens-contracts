@@ -257,7 +257,7 @@ export const unwrapTests = (loadFixture: LoadNameWrapperFixture) =>
 
       await expect(
         nameWrapper.write.unwrap([
-          namehash('eth'),
+          namehash('etn'),
           labelhash(label),
           accounts[0].address,
         ]),

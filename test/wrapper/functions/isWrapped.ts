@@ -166,7 +166,7 @@ export const isWrappedTests = (
 
       await expect(
         nameWrapper.read.isWrapped([
-          namehash('eth'),
+          namehash('etn'),
           labelhash(label),
         ]) as Promise<boolean>,
       ).resolves.toBe(true)
@@ -180,7 +180,7 @@ export const isWrappedTests = (
 
       await expect(
         nameWrapper.read.isWrapped([
-          namehash('eth'),
+          namehash('etn'),
           labelhash(label),
         ]) as Promise<boolean>,
       ).resolves.toBe(false)
@@ -199,7 +199,7 @@ export const isWrappedTests = (
       await expectOwnerOf(label).on(baseRegistrar).toBe(accounts[0])
       await expect(
         nameWrapper.read.isWrapped([
-          namehash('eth'),
+          namehash('etn'),
           labelhash(label),
         ]) as Promise<boolean>,
       ).resolves.toBe(false)
@@ -210,7 +210,7 @@ export const isWrappedTests = (
 
       await expect(
         nameWrapper.read.isWrapped([
-          namehash('eth'),
+          namehash('etn'),
           labelhash('abcdefghijklmnop'),
         ]) as Promise<boolean>,
       ).resolves.toBe(false)
