@@ -116,10 +116,10 @@ const config = {
     ],
   },
   generateTypedArtifacts: {
-    destinations: {
-      js: ['./generated/artifacts.js'],
-      ts: ['./generated/artifacts.ts'],
-    },
+    destinations: [
+      { mode: 'javascript', folder: './generated' },
+      { mode: 'typescript', folder: './generated' },
+    ],
   },
   paths: {
     sources: {

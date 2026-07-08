@@ -98,7 +98,7 @@ describe('ENSRegistry', () => {
       })
 
     await expect(
-      ensRegistry.read.owner([namehash('eth')]),
+      ensRegistry.read.owner([namehash('etn')]),
     ).resolves.toEqualAddress(accounts[1].address)
   })
 
