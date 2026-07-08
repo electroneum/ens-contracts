@@ -457,14 +457,14 @@ export const setChildFusesTests = (loadFixture: LoadNameWrapperFixture) => {
 
       await expect(
         nameWrapper.write.setChildFuses([
-          namehash('eth'),
+          namehash('etn'),
           labelhash(label),
           CANNOT_SET_RESOLVER,
           0n,
         ]),
       )
         .toBeRevertedWithCustomError('Unauthorised')
-        .withArgs([namehash('eth'), getAddress(accounts[0].address)])
+        .withArgs([namehash('etn'), getAddress(accounts[0].address)])
     })
 
     it('Does not allow burning fuses if CANNOT_UNWRAP is not burnt', async () => {

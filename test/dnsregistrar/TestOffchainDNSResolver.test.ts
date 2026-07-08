@@ -36,6 +36,7 @@ async function fixture() {
     ensRegistry.address,
   ])
 
+  await ensRegistry.write.setSubnodeCreator([root.address, true])
   await ensRegistry.write.setOwner([zeroHash, root.address])
 
   const suffixes = await connection.viem.deployContract(

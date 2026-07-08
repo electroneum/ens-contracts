@@ -22,6 +22,7 @@ async function fixture() {
     'ReverseRegistrar',
     [ensRegistry.address],
   )
+  await ensRegistry.write.setSubnodeCreator([reverseRegistrar.address, true])
 
   await ensRegistry.write.setSubnodeOwner([
     zeroHash,
@@ -38,6 +39,7 @@ async function fixture() {
     ensRegistry.address,
   ])
 
+  await ensRegistry.write.setSubnodeCreator([root.address, true])
   await ensRegistry.write.setOwner([zeroHash, root.address])
 
   const suffixes = await connection.viem.deployContract(
@@ -329,6 +331,7 @@ describe('DNSRegistrar', () => {
         ensRegistry.address,
       ])
 
+  await ensRegistry.write.setSubnodeCreator([root.address, true])
       await ensRegistry.write.setOwner([zeroHash, root.address])
 
       const suffixes = await connection.viem.deployContract(
