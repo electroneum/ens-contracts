@@ -60,6 +60,7 @@ async function fixture() {
   ])
 
   await root.write.setController([dnsRegistrar.address, true])
+  await ensRegistry.write.setSubnodeCreator([dnsRegistrar.address, true])
 
   return {
     ensRegistry,
@@ -353,6 +354,7 @@ describe('DNSRegistrar', () => {
       )
 
       await root.write.setController([dnsRegistrar.address, true])
+      await ensRegistry.write.setSubnodeCreator([dnsRegistrar.address, true])
 
       return { dnssec, ensRegistry, root, suffixes, dnsRegistrar }
     }
