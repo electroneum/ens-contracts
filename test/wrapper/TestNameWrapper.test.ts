@@ -70,9 +70,9 @@ describe('NameWrapper', () => {
         ...contracts,
       })),
     targetTokenIds: [
-      toNameId('test1.eth'),
-      toNameId('test2.eth'),
-      toNameId('doesnotexist.eth'),
+      toNameId('test1.etn'),
+      toNameId('test2.etn'),
+      toNameId('doesnotexist.etn'),
     ],
     mint: async (
       { accounts, actions },
@@ -792,7 +792,7 @@ describe('NameWrapper', () => {
         ),
       )
         .toBeRevertedWithCustomError('Unauthorised')
-        .withArgs([namehash(label + '.eth'), getAddress(accounts[2].address)])
+        .withArgs([namehash(label + '.etn'), getAddress(accounts[2].address)])
     })
 
     it('Approval on the Wrapper does not give permission to wrap a non .eth name', async () => {
