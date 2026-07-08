@@ -474,7 +474,7 @@ export const extendExpiryTests = (
 
       await expect(
         nameWrapper.write.extendExpiry([
-          namehash('eth'),
+          namehash('etn'),
           labelhash(label),
           expiry,
         ]),

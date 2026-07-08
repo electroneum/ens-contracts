@@ -1373,7 +1373,7 @@ export const shouldRespectConstraints = (connection: NetworkConnection) => {
       })
       await nameWrapper.write.wrap(
         [
-          dnsEncodeName(`${childLabel}.${parentLabel}.eth`),
+          dnsEncodeName(`${childLabel}.${parentLabel}.etn`),
           accounts[1].address,
           zeroAddress,
         ],
