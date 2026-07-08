@@ -86,14 +86,14 @@ describe('ENSRegistry', () => {
     await expect(
       ensRegistry.write.setSubnodeOwner([
         zeroHash,
-        labelhash('eth'),
+        labelhash('etn'),
         accounts[1].address,
       ]),
     )
       .toEmitEvent('NewOwner')
       .withArgs({
         node: zeroHash,
-        label: labelhash('eth'),
+        label: labelhash('etn'),
         owner: getAddress(accounts[1].address),
       })
 
@@ -107,9 +107,9 @@ describe('ENSRegistry', () => {
 
     await expect(
       ensRegistry.write.setSubnodeOwner(
-        [zeroHash, labelhash('eth'), accounts[1].address],
+        [zeroHash, labelhash('etn'), accounts[1].address],
         { account: accounts[1] },
       ),
-    ).toBeRevertedWithoutReason()
+    ).toBeRevertedWithString('Subnode creation restricted')
   })
 })

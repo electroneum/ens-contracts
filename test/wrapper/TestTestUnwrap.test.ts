@@ -14,6 +14,7 @@ async function fixture() {
     'BaseRegistrarImplementation',
     [ensRegistry.address, namehash('eth')],
   )
+  await ensRegistry.write.setSubnodeCreator([baseRegistrar.address, true])
 
   await baseRegistrar.write.addController([accounts[0].address])
   await baseRegistrar.write.addController([accounts[1].address])
@@ -22,6 +23,7 @@ async function fixture() {
     'ReverseRegistrar',
     [ensRegistry.address],
   )
+  await ensRegistry.write.setSubnodeCreator([reverseRegistrar.address, true])
 
   await ensRegistry.write.setSubnodeOwner([
     zeroHash,
@@ -50,7 +52,7 @@ async function fixture() {
 
   await ensRegistry.write.setSubnodeOwner([
     zeroHash,
-    labelhash('eth'),
+    labelhash('etn'),
     baseRegistrar.address,
   ])
 
