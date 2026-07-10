@@ -12,7 +12,6 @@ async function fixture() {
   const root = await connection.viem.deployContract('Root', [
     ensRegistry.address,
   ])
-  await ensRegistry.write.setSubnodeCreator([root.address, true])
   const rootSecurityController = await connection.viem.deployContract(
     'RootSecurityController',
     [root.address],

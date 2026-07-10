@@ -26,7 +26,7 @@ import {
   shortCoin,
 } from '../fixtures/ensip19.js'
 
-const targetNode = namehash('etn')
+const targetNode = namehash('eth')
 
 const connection = await hre.network.connect()
 const accounts = await getAccounts(connection)
@@ -43,7 +43,6 @@ async function fixture() {
     'ReverseRegistrar',
     [ensRegistry.address],
   )
-  await ensRegistry.write.setSubnodeCreator([reverseRegistrar.address, true])
 
   await ensRegistry.write.setSubnodeOwner([
     zeroHash,
@@ -70,7 +69,7 @@ async function fixture() {
 
   await ensRegistry.write.setSubnodeOwner([
     zeroHash,
-    labelhash('etn'),
+    labelhash('eth'),
     accounts[0].address,
   ])
 

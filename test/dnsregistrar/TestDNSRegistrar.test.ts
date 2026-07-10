@@ -22,7 +22,6 @@ async function fixture() {
     'ReverseRegistrar',
     [ensRegistry.address],
   )
-  await ensRegistry.write.setSubnodeCreator([reverseRegistrar.address, true])
 
   await ensRegistry.write.setSubnodeOwner([
     zeroHash,
@@ -34,17 +33,22 @@ async function fixture() {
     labelhash('addr'),
     reverseRegistrar.address,
   ])
+
   const root = await connection.viem.deployContract('Root', [
     ensRegistry.address,
   ])
-  await ensRegistry.write.setSubnodeCreator([root.address, true])
+
+  await ensRegistry.write.setOwner([zeroHash, root.address])
+
   const suffixes = await connection.viem.deployContract(
     'SimplePublicSuffixList',
     [],
   )
+
   await suffixes.write.addPublicSuffixes([
     [dnsEncodeName('test'), dnsEncodeName('co.nz')],
   ])
+
   const dnsRegistrar = await connection.viem.deployContract('DNSRegistrar', [
     zeroAddress, // Previous registrar
     zeroAddress, // Resolver
@@ -52,9 +56,8 @@ async function fixture() {
     suffixes.address,
     ensRegistry.address,
   ])
+
   await root.write.setController([dnsRegistrar.address, true])
-  await ensRegistry.write.setSubnodeCreator([dnsRegistrar.address, true])
-  await ensRegistry.write.setOwner([zeroHash, root.address])
 
   return {
     ensRegistry,
@@ -184,7 +187,7 @@ describe('DNSRegistrar', () => {
     ).toBeRevertedWithCustomError('StaleProof')
   })
 
-  it.skip('does not allow updates with stale records (skipped: unresolved, pre-existing issue)', async () => {
+  it('does not allow updates with stale records', async () => {
     const { dnsRegistrar, dnssec } = await loadFixture()
 
     const rrset = testRrset({
@@ -326,7 +329,7 @@ describe('DNSRegistrar', () => {
         ensRegistry.address,
       ])
 
-  await ensRegistry.write.setSubnodeCreator([root.address, true])
+      await ensRegistry.write.setOwner([zeroHash, root.address])
 
       const suffixes = await connection.viem.deployContract(
         'SimplePublicSuffixList',
@@ -347,8 +350,6 @@ describe('DNSRegistrar', () => {
       )
 
       await root.write.setController([dnsRegistrar.address, true])
-      await ensRegistry.write.setSubnodeCreator([dnsRegistrar.address, true])
-      await ensRegistry.write.setOwner([zeroHash, root.address])
 
       return { dnssec, ensRegistry, root, suffixes, dnsRegistrar }
     }

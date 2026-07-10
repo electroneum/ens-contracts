@@ -15,14 +15,13 @@ async function fixture() {
   const ensRegistry = await connection.viem.deployContract('ENSRegistry', [])
   const baseRegistrar = await connection.viem.deployContract(
     'BaseRegistrarImplementation',
-    [ensRegistry.address, namehash('etn')],
+    [ensRegistry.address, namehash('eth')],
   )
-  await ensRegistry.write.setSubnodeCreator([baseRegistrar.address, true])
 
   await baseRegistrar.write.addController([controllerAccount.address])
   await ensRegistry.write.setSubnodeOwner([
     zeroHash,
-    labelhash('etn'),
+    labelhash('eth'),
     baseRegistrar.address,
   ])
 
@@ -298,7 +297,7 @@ describe('BaseRegistrar', () => {
     })
 
     await expect(
-      ensRegistry.read.resolver([namehash('etn')]),
+      ensRegistry.read.resolver([namehash('eth')]),
     ).resolves.toEqualAddress(controllerAccount.address)
   })
 })

@@ -8,7 +8,7 @@ export async function deployNameWrapperFixture(connection: NetworkConnection) {
   const ensRegistry = await connection.viem.deployContract('ENSRegistry', [])
   const baseRegistrar = await connection.viem.deployContract(
     'BaseRegistrarImplementation',
-    [ensRegistry.address, namehash('etn')],
+    [ensRegistry.address, namehash('eth')],
   )
 
   await baseRegistrar.write.addController([accounts[0].address])
@@ -24,7 +24,6 @@ export async function deployNameWrapperFixture(connection: NetworkConnection) {
     'ReverseRegistrar',
     [ensRegistry.address],
   )
-  await ensRegistry.write.setSubnodeCreator([reverseRegistrar.address, true])
 
   await ensRegistry.write.setSubnodeOwner([
     zeroHash,
@@ -49,18 +48,16 @@ export async function deployNameWrapperFixture(connection: NetworkConnection) {
     baseRegistrar.address,
     metadataService.address,
   ])
-  await ensRegistry.write.setSubnodeCreator([nameWrapper.address, true])
-  await ensRegistry.write.setSubnodeCreator([baseRegistrar.address, true])
 
   const nameWrapperUpgraded = await connection.viem.deployContract(
     'UpgradedNameWrapperMock',
     [ensRegistry.address, baseRegistrar.address],
   )
 
-  // setup .etn
+  // setup .eth
   await ensRegistry.write.setSubnodeOwner([
     zeroHash,
-    labelhash('etn'),
+    labelhash('eth'),
     baseRegistrar.address,
   ])
 

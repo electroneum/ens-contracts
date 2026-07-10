@@ -40,14 +40,12 @@ async function fixture() {
   const ensRegistry = await connection.viem.deployContract('ENSRegistry', [])
   const baseRegistrar = await connection.viem.deployContract(
     'BaseRegistrarImplementation',
-    [ensRegistry.address, namehash('etn')],
+    [ensRegistry.address, namehash('eth')],
   )
-  await ensRegistry.write.setSubnodeCreator([baseRegistrar.address, true])
   const reverseRegistrar = await connection.viem.deployContract(
     'ReverseRegistrar',
     [ensRegistry.address],
   )
-  await ensRegistry.write.setSubnodeCreator([reverseRegistrar.address, true])
 
   const defaultReverseRegistrar = await connection.viem.deployContract(
     'DefaultReverseRegistrar',
@@ -73,7 +71,7 @@ async function fixture() {
 
   await ensRegistry.write.setSubnodeOwner([
     zeroHash,
-    labelhash('etn'),
+    labelhash('eth'),
     baseRegistrar.address,
   ])
 
@@ -123,12 +121,12 @@ async function fixture() {
     encodeFunctionData({
       abi: publicResolver.abi,
       functionName: 'setAddr',
-      args: [namehash('newconfigname.etn'), registrantAccount.address],
+      args: [namehash('newconfigname.eth'), registrantAccount.address],
     }),
     encodeFunctionData({
       abi: publicResolver.abi,
       functionName: 'setText',
-      args: [namehash('newconfigname.etn'), 'url', 'ethereum.com'],
+      args: [namehash('newconfigname.eth'), 'url', 'ethereum.com'],
     }),
   ]
 
@@ -304,7 +302,7 @@ describe('ETHRegistrarController', () => {
       publicClient.getBalance({ address: ethRegistrarController.address }),
     ).resolves.toEqual(REGISTRATION_TIME)
 
-    const nodehash = namehash('newconfigname.etn')
+    const nodehash = namehash('newconfigname.eth')
     await expect(ensRegistry.read.resolver([nodehash])).resolves.toEqualAddress(
       publicResolver.address,
     )
@@ -397,7 +395,7 @@ describe('ETHRegistrarController', () => {
           encodeFunctionData({
             abi: publicResolver.abi,
             functionName: 'setAddr',
-            args: [namehash('othername.etn'), registrantAccount.address],
+            args: [namehash('othername.eth'), registrantAccount.address],
           }),
         ],
       },
@@ -426,12 +424,12 @@ describe('ETHRegistrarController', () => {
           encodeFunctionData({
             abi: publicResolver.abi,
             functionName: 'setAddr',
-            args: [namehash('awesome.etn'), registrantAccount.address],
+            args: [namehash('awesome.eth'), registrantAccount.address],
           }),
           encodeFunctionData({
             abi: publicResolver.abi,
             functionName: 'setText',
-            args: [namehash('othername.etn'), 'url', 'ethereum.com'],
+            args: [namehash('othername.eth'), 'url', 'ethereum.com'],
           }),
         ],
       },
@@ -480,7 +478,7 @@ describe('ETHRegistrarController', () => {
           '0x0000000000000000000000000000000000000000000000000000000000000000',
       })
 
-    const nodehash = namehash('newconfigname.etn')
+    const nodehash = namehash('newconfigname.eth')
     await expect(ensRegistry.read.resolver([nodehash])).resolves.toEqualAddress(
       publicResolver.address,
     )
@@ -595,7 +593,7 @@ describe('ETHRegistrarController', () => {
       },
     )
 
-    const nodehash = namehash('newname.etn')
+    const nodehash = namehash('newname.eth')
     const fuseExpiry = await nameWrapper.read
       .getData([hexToBigInt(nodehash)])
       .then((d) => d[2])
@@ -766,7 +764,7 @@ describe('ETHRegistrarController', () => {
       publicResolver.read.name([
         namehash(getReverseName(ownerAccount.address)),
       ]),
-    ).resolves.toEqual('reverse.etn')
+    ).resolves.toEqual('reverse.eth')
     await expect(
       defaultReverseRegistrar.read.nameForAddr([ownerAccount.address]),
     ).resolves.toEqual('')
@@ -825,10 +823,10 @@ describe('ETHRegistrarController', () => {
       publicResolver.read.name([
         namehash(getReverseName(ownerAccount.address)),
       ]),
-    ).resolves.toEqual('reverse.etn')
+    ).resolves.toEqual('reverse.eth')
     await expect(
       defaultReverseRegistrar.read.nameForAddr([ownerAccount.address]),
-    ).resolves.toEqual('reverse.etn')
+    ).resolves.toEqual('reverse.eth')
   })
 
   it('should not set the reverse record of the account when set to false', async () => {
@@ -944,7 +942,7 @@ describe('ETHRegistrarController', () => {
     } = await loadFixture()
 
     const label = 'other'
-    const name = label + '.etn'
+    const name = label + '.eth'
     const node = namehash(name)
 
     const { args } = await commitName(
@@ -1011,7 +1009,7 @@ describe('ETHRegistrarController', () => {
     } = await loadFixture()
 
     const label = 'newconfigname'
-    const name = label + '.etn'
+    const name = label + '.eth'
     const node = namehash(name)
     const secondTokenDuration = 788400000n // keep bogus NFT for 25 years;
     const callData = [
@@ -1048,7 +1046,7 @@ describe('ETHRegistrarController', () => {
     const { ethRegistrarController, registrantAccount, publicClient } =
       await loadFixture()
 
-    const referrer = namehash('referrer.etn')
+    const referrer = namehash('referrer.eth')
     const { args, params } = await commitName(
       { ethRegistrarController },
       {
@@ -1085,7 +1083,7 @@ describe('ETHRegistrarController', () => {
       await loadFixture()
 
     const label = 'newname'
-    const referrer = namehash('referrer.etn')
+    const referrer = namehash('referrer.eth')
     const duration = 86400n
     await registerName(
       { ethRegistrarController },
