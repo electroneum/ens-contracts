@@ -8,8 +8,6 @@ const MIN_COMMITMENT_AGE = 60;        // seconds
 const MAX_COMMITMENT_AGE = 86400;     // seconds (24h)
 const ETN_NODE = '0x69a3977d40595dbc343e3fa6ddbd26dbe31cc237836622384941b3c5148974cd';
 
-const REVOKE_DEPLOYER_WHITELIST_AFTER_SETUP = true;
-
 async function getArtifact(contractName, filePath) {
   const lookupName = filePath ? `${filePath}:${contractName}` : contractName;
   const result = await remix.call('compilerArtefacts', 'getArtefactsByContractName', lookupName);
@@ -38,10 +36,11 @@ async function deploy(contractName, signer, args = [], filePath) {
   try {
     const provider = new ethers.providers.Web3Provider(web3Provider);
     const signer = provider.getSigner();
+
     const deployerAddress = await signer.getAddress();
     console.log('Deploying from:', deployerAddress);
 
-    // ---- 1. Core contract deployments (excluding PublicResolver for now) ----
+    // ---- 1. Core contract deployments ----
 
     const registry = await deploy('ENSRegistry', signer);
 
@@ -68,13 +67,13 @@ async function deploy(contractName, signer, args = [], filePath) {
     // ---- 2. Registry wiring ----
     console.log('\nWiring registry...');
 
-    let tx = await registry.setSubnodeCreator(deployerAddress, true);
-    await tx.wait();
-    console.log('Registry: deployer temporarily whitelisted to bootstrap nodes');
+    // Deployer already owns node 0x0 (root) from ENSRegistry's constructor,
+    // and setSubnodeOwner is unrestricted (any node owner can create subnodes),
+    // so no whitelisting step is needed here anymore.
 
     // --- .etn node ---
     const labelhashEtn = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('etn'));
-    tx = await registry.setSubnodeOwner(
+    let tx = await registry.setSubnodeOwner(
       ethers.constants.HashZero,
       labelhashEtn,
       baseRegistrar.address
@@ -107,21 +106,6 @@ async function deploy(contractName, signer, args = [], filePath) {
     );
     await tx.wait();
     console.log('Registry: "addr.reverse" node created, owned by ReverseRegistrar');
-
-    // --- permanent whitelist entries ---
-    tx = await registry.setSubnodeCreator(baseRegistrar.address, true);
-    await tx.wait();
-    console.log('Registry: BaseRegistrar whitelisted as subnode creator');
-
-    tx = await registry.setSubnodeCreator(reverseRegistrar.address, true);
-    await tx.wait();
-    console.log('Registry: ReverseRegistrar whitelisted as subnode creator');
-
-    if (REVOKE_DEPLOYER_WHITELIST_AFTER_SETUP) {
-      tx = await registry.setSubnodeCreator(deployerAddress, false);
-      await tx.wait();
-      console.log('Registry: deployer whitelist entry revoked');
-    }
 
     // ---- 3. Deploy PublicResolver (safe now that addr.reverse resolves) ----
 
