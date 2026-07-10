@@ -117,16 +117,18 @@ function sleep(ms) {
     const resolvedAddr = await publicResolver['addr(bytes32)'](namehash);
     console.log('Resolved address:', resolvedAddr, '| Expected:', myAddress);
 
-    // ---- TEST 7: CRITICAL — verify subdomain creation is blocked ----
-    console.log('\n=== TEST 7: Subdomain creation should FAIL ===');
+    // ---- TEST 7: Subdomain creation should now SUCCEED (unrestricted, matches upstream) ----
+    console.log('\n=== TEST 7: Subdomain creation (unrestricted, should succeed) ===');
     const sublabelhash = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('sub'));
-    try {
-      tx = await registry.setSubnodeOwner(namehash, sublabelhash, myAddress);
-      await tx.wait();
-      console.log('!!! UNEXPECTED: subdomain creation SUCCEEDED. This should not happen. !!!');
-    } catch (err) {
-      console.log('Subdomain creation correctly REVERTED as expected.');
-      console.log('Revert reason (if visible):', err.reason || err.message);
+    tx = await registry.setSubnodeOwner(namehash, sublabelhash, myAddress);
+    await tx.wait();
+    const subnode = ethers.utils.keccak256(
+      ethers.utils.defaultAbiCoder.encode(['bytes32', 'bytes32'], [namehash, sublabelhash])
+    );
+    const subnodeOwner = await registry.owner(subnode);
+    console.log('Subdomain created. Owner:', subnodeOwner, '| Expected:', myAddress);
+    if (subnodeOwner.toLowerCase() !== myAddress.toLowerCase()) {
+      console.log('!!! UNEXPECTED: subdomain owner does not match !!!');
     }
 
     // ---- TEST 8: Renew ----
