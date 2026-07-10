@@ -36,7 +36,6 @@ async function fixture() {
     ensRegistry.address,
   ])
 
-  await ensRegistry.write.setSubnodeCreator([root.address, true])
   await ensRegistry.write.setOwner([zeroHash, root.address])
 
   const suffixes = await connection.viem.deployContract(
@@ -242,7 +241,7 @@ describe('OffchainDNSResolver', () => {
     )
   })
 
-  it.skip('handles calls to resolveCallback() with valid DNS TXT records containing a name (skipped: unresolved, pre-existing issue)', async () => {
+  it('handles calls to resolveCallback() with valid DNS TXT records containing a name', async () => {
     const {
       ownedResolver,
       root,
@@ -279,7 +278,7 @@ describe('OffchainDNSResolver', () => {
     await expect(
       doDnsResolveCallback({
         name,
-        texts: [`ENS1 dnsresolver.eth`],
+        texts: [`ENS1 dnsresolver.etn`],
         calldata,
       }),
     ).resolves.toEqual(
@@ -475,7 +474,7 @@ describe('OffchainDNSResolver', () => {
     ).resolves.toEqual('0x')
   })
 
-  it.skip('raises an error if extra (address) data in the TXT record is invalid (skipped: unresolved, pre-existing issue)', async () => {
+  it('raises an error if extra (address) data in the TXT record is invalid', async () => {
     const { doDnsResolveCallback, publicResolverAbi } = await loadFixture()
 
     const resolver = await connection.viem.deployContract(

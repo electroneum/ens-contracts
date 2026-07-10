@@ -14,7 +14,6 @@ async function fixture() {
     'BaseRegistrarImplementation',
     [ensRegistry.address, namehash('etn')],
   )
-  await ensRegistry.write.setSubnodeCreator([baseRegistrar.address, true])
 
   await baseRegistrar.write.addController([accounts[0].address])
   await baseRegistrar.write.addController([accounts[1].address])
@@ -23,7 +22,6 @@ async function fixture() {
     'ReverseRegistrar',
     [ensRegistry.address],
   )
-  await ensRegistry.write.setSubnodeCreator([reverseRegistrar.address, true])
 
   await ensRegistry.write.setSubnodeOwner([
     zeroHash,
@@ -45,7 +43,6 @@ async function fixture() {
     baseRegistrar.address,
     metadataService.address,
   ])
-  await ensRegistry.write.setSubnodeCreator([nameWrapper.address, true])
   const testUnwrap = await connection.viem.deployContract('TestUnwrap', [
     ensRegistry.address,
     baseRegistrar.address,
@@ -118,7 +115,7 @@ describe('TestUnwrap', () => {
       const loadFixtureWithTestEthRegistered = async () =>
         connection.networkHelpers.loadFixture(fixtureWithTestEthRegistered)
 
-      it.skip('allows unwrapping from an approved NameWrapper (skipped: unresolved ownership mismatch, pre-existing issue unrelated to subdomain restriction)', async () => {
+      it('allows unwrapping from an approved NameWrapper', async () => {
         const { ensRegistry, baseRegistrar, nameWrapper, testUnwrap } =
           await loadFixtureWithTestEthRegistered()
 

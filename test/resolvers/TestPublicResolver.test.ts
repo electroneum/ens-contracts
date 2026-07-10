@@ -43,7 +43,6 @@ async function fixture() {
     'ReverseRegistrar',
     [ensRegistry.address],
   )
-  await ensRegistry.write.setSubnodeCreator([reverseRegistrar.address, true])
 
   await ensRegistry.write.setSubnodeOwner([
     zeroHash,

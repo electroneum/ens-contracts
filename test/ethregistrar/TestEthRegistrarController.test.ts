@@ -42,12 +42,10 @@ async function fixture() {
     'BaseRegistrarImplementation',
     [ensRegistry.address, namehash('etn')],
   )
-  await ensRegistry.write.setSubnodeCreator([baseRegistrar.address, true])
   const reverseRegistrar = await connection.viem.deployContract(
     'ReverseRegistrar',
     [ensRegistry.address],
   )
-  await ensRegistry.write.setSubnodeCreator([reverseRegistrar.address, true])
 
   const defaultReverseRegistrar = await connection.viem.deployContract(
     'DefaultReverseRegistrar',
@@ -673,7 +671,7 @@ describe('ETHRegistrarController', () => {
 
     const label = 'newname'
     const tokenId = labelId(label)
-    const nodehash = namehash(`${label}.eth`)
+    const nodehash = namehash(`${label}.etn`)
     const duration = 86400n
     // this is to allow user to register without namewrapped
     await baseRegistrar.write.addController([ownerAccount.address])

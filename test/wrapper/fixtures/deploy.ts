@@ -24,7 +24,6 @@ export async function deployNameWrapperFixture(connection: NetworkConnection) {
     'ReverseRegistrar',
     [ensRegistry.address],
   )
-  await ensRegistry.write.setSubnodeCreator([reverseRegistrar.address, true])
 
   await ensRegistry.write.setSubnodeOwner([
     zeroHash,
@@ -49,8 +48,6 @@ export async function deployNameWrapperFixture(connection: NetworkConnection) {
     baseRegistrar.address,
     metadataService.address,
   ])
-  await ensRegistry.write.setSubnodeCreator([nameWrapper.address, true])
-  await ensRegistry.write.setSubnodeCreator([baseRegistrar.address, true])
 
   const nameWrapperUpgraded = await connection.viem.deployContract(
     'UpgradedNameWrapperMock',

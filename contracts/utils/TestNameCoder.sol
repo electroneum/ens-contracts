@@ -72,8 +72,8 @@ contract TestNameCoder {
         return NameCoder.matchSuffix(name, offset, nodeSuffix);
     }
 
-    function ethName(string memory label) external pure returns (bytes memory) {
-        return NameCoder.ethName(label);
+    function etnName(string memory label) external pure returns (bytes memory) {
+        return NameCoder.etnName(label);
     }
 
     function addLabel(

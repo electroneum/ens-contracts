@@ -17,7 +17,6 @@ async function fixture() {
     'BaseRegistrarImplementation',
     [ensRegistry.address, namehash('etn')],
   )
-  await ensRegistry.write.setSubnodeCreator([baseRegistrar.address, true])
 
   await baseRegistrar.write.addController([controllerAccount.address])
   await ensRegistry.write.setSubnodeOwner([
@@ -57,7 +56,7 @@ describe('BaseRegistrar', () => {
     const block = await publicClient.getBlock({ blockHash: receipt.blockHash })
 
     await expect(
-      ensRegistry.read.owner([namehash('newname.eth')]),
+      ensRegistry.read.owner([namehash('newname.etn')]),
     ).resolves.toEqualAddress(registrantAccount.address)
     await expect(
       baseRegistrar.read.ownerOf([toLabelId('newname')]),
@@ -80,7 +79,7 @@ describe('BaseRegistrar', () => {
     const block = await publicClient.getBlock({ blockHash: receipt.blockHash })
 
     await expect(
-      ensRegistry.read.owner([namehash('silentname.eth')]),
+      ensRegistry.read.owner([namehash('silentname.etn')]),
     ).resolves.toEqualAddress(zeroAddress)
     await expect(
       baseRegistrar.read.ownerOf([toLabelId('silentname')]),
@@ -155,7 +154,7 @@ describe('BaseRegistrar', () => {
   it('should permit the owner to reclaim a name', async () => {
     const { ensRegistry, baseRegistrar } = await loadFixtureWithRegistration()
 
-    await ensRegistry.write.setOwner([namehash('newname.eth'), zeroAddress], {
+    await ensRegistry.write.setOwner([namehash('newname.etn'), zeroAddress], {
       account: registrantAccount,
     })
     await baseRegistrar.write.reclaim(
@@ -166,14 +165,14 @@ describe('BaseRegistrar', () => {
     )
 
     await expect(
-      ensRegistry.read.owner([namehash('newname.eth')]),
+      ensRegistry.read.owner([namehash('newname.etn')]),
     ).resolves.toEqualAddress(registrantAccount.address)
   })
 
   it('should prohibit anyone else from reclaiming a name', async () => {
     const { ensRegistry, baseRegistrar } = await loadFixtureWithRegistration()
 
-    await ensRegistry.write.setOwner([namehash('newname.eth'), zeroAddress], {
+    await ensRegistry.write.setOwner([namehash('newname.etn'), zeroAddress], {
       account: registrantAccount,
     })
 
@@ -201,7 +200,7 @@ describe('BaseRegistrar', () => {
       baseRegistrar.read.ownerOf([toLabelId('newname')]),
     ).resolves.toEqualAddress(otherAccount.address)
     await expect(
-      ensRegistry.read.owner([namehash('newname.eth')]),
+      ensRegistry.read.owner([namehash('newname.etn')]),
     ).resolves.toEqualAddress(registrantAccount.address)
 
     await baseRegistrar.write.transferFrom(
