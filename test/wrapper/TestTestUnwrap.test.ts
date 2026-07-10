@@ -12,7 +12,7 @@ async function fixture() {
   const ensRegistry = await connection.viem.deployContract('ENSRegistry', [])
   const baseRegistrar = await connection.viem.deployContract(
     'BaseRegistrarImplementation',
-    [ensRegistry.address, namehash('eth')],
+    [ensRegistry.address, namehash('etn')],
   )
 
   await baseRegistrar.write.addController([accounts[0].address])
@@ -50,7 +50,7 @@ async function fixture() {
 
   await ensRegistry.write.setSubnodeOwner([
     zeroHash,
-    labelhash('eth'),
+    labelhash('etn'),
     baseRegistrar.address,
   ])
 
@@ -71,10 +71,10 @@ const loadFixture = async () => connection.networkHelpers.loadFixture(fixture)
 describe('TestUnwrap', () => {
   describe('wrapFromUpgrade()', () => {
     describe('.eth', () => {
-      const encodedName = dnsEncodeName('wrapped.eth')
+      const encodedName = dnsEncodeName('wrapped.etn')
       const label = 'wrapped'
       const labelHash = labelhash(label)
-      const nameHash = namehash('wrapped.eth')
+      const nameHash = namehash('wrapped.etn')
 
       async function fixtureWithTestEthRegistered() {
         const initial = await loadFixture()
@@ -164,9 +164,9 @@ describe('TestUnwrap', () => {
     describe('other', () => {
       const label = 'to-upgrade'
       const parentLabel = 'wrapped2'
-      const name = `${label}.${parentLabel}.eth`
+      const name = `${label}.${parentLabel}.etn`
       const parentLabelHash = labelhash(parentLabel)
-      const parentHash = namehash(`${parentLabel}.eth`)
+      const parentHash = namehash(`${parentLabel}.etn`)
       const nameHash = namehash(name)
       const encodedName = dnsEncodeName(name)
 
