@@ -70,9 +70,9 @@ describe('NameWrapper', () => {
         ...contracts,
       })),
     targetTokenIds: [
-      toNameId('test1.eth'),
-      toNameId('test2.eth'),
-      toNameId('doesnotexist.eth'),
+      toNameId('test1.etn'),
+      toNameId('test2.etn'),
+      toNameId('doesnotexist.etn'),
     ],
     mint: async (
       { accounts, actions },
@@ -131,7 +131,7 @@ describe('NameWrapper', () => {
 
   describe('Transfer', () => {
     const label = 'transfer'
-    const name = `${label}.eth`
+    const name = `${label}.etn`
 
     async function transferFixture() {
       const initial = await loadFixture(nameWrapperFixture)
@@ -265,7 +265,7 @@ describe('NameWrapper', () => {
       } = await loadFixture(nameWrapperFixture)
 
       const label = 'base'
-      const name = `${label}.eth`
+      const name = `${label}.etn`
 
       await actions.register({
         label,
@@ -375,7 +375,7 @@ describe('NameWrapper', () => {
 
   describe('Grace period tests', () => {
     const label = 'test'
-    const name = `${label}.eth`
+    const name = `${label}.etn`
     const sublabel = 'sub'
     const subname = `${sublabel}.${name}`
 
@@ -685,7 +685,7 @@ describe('NameWrapper', () => {
 
   describe('Registrar tests', () => {
     const label = 'sub1'
-    const name = `${label}.eth`
+    const name = `${label}.etn`
     const sublabel = 'sub2'
     const subname = `${sublabel}.${name}`
 
@@ -750,7 +750,7 @@ describe('NameWrapper', () => {
 
   describe('ERC1155 additional tests', () => {
     const label = 'erc1155'
-    const name = `${label}.eth`
+    const name = `${label}.etn`
 
     it('Transferring a token that is not owned by the owner reverts', async () => {
       const { nameWrapper, actions, accounts } = await loadFixture(
@@ -792,7 +792,7 @@ describe('NameWrapper', () => {
         ),
       )
         .toBeRevertedWithCustomError('Unauthorised')
-        .withArgs([namehash(label + '.eth'), getAddress(accounts[2].address)])
+        .withArgs([namehash(label + '.etn'), getAddress(accounts[2].address)])
     })
 
     it('Approval on the Wrapper does not give permission to wrap a non .eth name', async () => {
@@ -975,7 +975,7 @@ describe('NameWrapper', () => {
 
   describe('Implicit unwrap tests', () => {
     const label = 'sub1'
-    const name = `${label}.eth`
+    const name = `${label}.etn`
     const sublabel = 'sub2'
     const subname = `${sublabel}.${name}`
 

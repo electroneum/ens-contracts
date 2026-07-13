@@ -21,7 +21,7 @@ export const approveTests = (
   describe('approve()', () => {
     const label = 'subdomain'
     const sublabel = 'sub'
-    const name = `${label}.eth`
+    const name = `${label}.etn`
     const subname = `${sublabel}.${name}`
 
     async function fixture() {
