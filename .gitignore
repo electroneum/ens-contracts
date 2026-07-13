@@ -9,4 +9,7 @@ build
 forge-cache
 out
 deployments/**/.pendingSafeTransactions
-deployments/localhost.deps/
+deployments/localhost
+.deps/
+package-lock.json
+remix.config.json
