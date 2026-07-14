@@ -56,19 +56,31 @@ export default deployScript(
     }).then((v) => getAddress(v as Address))
 
     if (resolverEthOwner === getAddress(owner)) {
-      console.log(`  - Setting resolver for resolver.etn to PublicResolver`)
-      await write(registry, {
-        functionName: 'setResolver',
-        args: [namehash('resolver.etn'), publicResolver.address],
-        account: owner,
-      })
+      const currentResolver = await read(registry, {
+        functionName: 'resolver',
+        args: [namehash('resolver.etn')],
+      }).then((v) => getAddress(v as Address))
+      if (currentResolver !== getAddress(publicResolver.address)) {
+        console.log(`  - Setting resolver for resolver.etn to PublicResolver`)
+        await write(registry, {
+          functionName: 'setResolver',
+          args: [namehash('resolver.etn'), publicResolver.address],
+          account: owner,
+        })
+      }
 
-      console.log(`  - Setting addr for resolver.etn to PublicResolver`)
-      await write(publicResolver, {
-        functionName: 'setAddr',
-        args: [namehash('resolver.etn'), publicResolver.address],
-        account: owner,
-      })
+      const currentAddr = await read(publicResolver, {
+        functionName: 'addr',
+        args: [namehash('resolver.etn')],
+      }).then((v) => getAddress(v as Address))
+      if (currentAddr !== getAddress(publicResolver.address)) {
+        console.log(`  - Setting addr for resolver.etn to PublicResolver`)
+        await write(publicResolver, {
+          functionName: 'setAddr',
+          args: [namehash('resolver.etn'), publicResolver.address],
+          account: owner,
+        })
+      }
     } else {
       console.warn(
         `  - WARN: resolver.etn is not owned by the owner address, not setting resolver`,
@@ -83,6 +95,9 @@ export default deployScript(
       'NameWrapper',
       'ETHRegistrarController',
       'ReverseRegistrar',
+      // resolver.etn must be registered (to the owner) before this script
+      // can point it at the PublicResolver
+      'ReservedNames',
     ],
   },
 )

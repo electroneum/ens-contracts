@@ -6,7 +6,11 @@ import { getAddress, labelhash, type Address } from 'viem'
 // exist in the public ETHRegistrarController) to the owner account, as
 // ordinary registrar NFTs: renewable, transferable and reclaimable like any
 // other .etn name.
-const RESERVED_NAMES = ['wallet', 'pay']
+//
+// 'resolver' backs the legacy resolver.eth discovery convention:
+// 00_deploy_public_resolver points resolver.etn at the PublicResolver once
+// the owner account owns the name.
+const RESERVED_NAMES = ['wallet', 'pay', 'resolver']
 const RESERVATION_DURATION = 100n * 365n * 24n * 60n * 60n // 100 years
 
 export default deployScript(

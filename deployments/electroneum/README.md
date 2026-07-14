@@ -106,7 +106,7 @@ Same as step 5 with `--network electroneum` (records land in this directory). Up
 
 ## Reserved names
 
-`deploy/ethregistrar/06_register_reserved_names.ts` registers the names listed in its `RESERVED_NAMES` constant (currently `wallet.etn` and `pay.etn`) to the **owner account** for 100 years, as part of the pipeline. It registers directly on the base registrar (controller-only, no payment) by temporarily authorising the owner as a registrar controller and revoking it afterwards. The names are ordinary registrar NFTs — renewable, transferable, reclaimable — and can have resolver records set by the owner like any other name. Edit the constant to change the list; the script skips names that are already registered.
+`deploy/ethregistrar/06_register_reserved_names.ts` registers the names listed in its `RESERVED_NAMES` constant (currently `wallet.etn`, `pay.etn` and `resolver.etn`) to the **owner account** for 100 years, as part of the pipeline. It registers directly on the base registrar (controller-only, no payment) by temporarily authorising the owner as a registrar controller and revoking it afterwards. The names are ordinary registrar NFTs — renewable, transferable, reclaimable — and can have resolver records set by the owner like any other name. Edit the constant to change the list; the script skips names that are already registered. `resolver.etn` backs the legacy resolver-discovery convention: once reserved, `00_deploy_public_resolver` points its resolver and address records at the PublicResolver.
 
 ## Notes
 

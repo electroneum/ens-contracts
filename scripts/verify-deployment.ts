@@ -123,11 +123,15 @@ check(
   !!usvCode && usvCode !== '0x',
 )
 
-for (const reserved of ['wallet', 'pay']) {
+for (const reserved of ['wallet', 'pay', 'resolver']) {
   check(`reserved name ${reserved}.etn is taken`, !(await read(controller, 'available', [reserved])))
   const reservedOwner = (await read(registrar, 'ownerOf', [BigInt(labelhash(reserved))])) as Address
   console.log(`    (${reserved}.etn registrar owner: ${reservedOwner})`)
 }
+
+// legacy resolver-discovery convention: resolver.etn points at PublicResolver
+eqAddr('resolver.etn resolver is PublicResolver', await read(registry, 'resolver', [namehash('resolver.etn')]), publicResolver.address)
+eqAddr('resolver.etn addr() is PublicResolver', await read(publicResolver, 'addr', [namehash('resolver.etn')]), publicResolver.address)
 
 const probePrice = (await read(controller, 'rentPrice', ['testname12345', 31536000n])) as
   | { base: bigint; premium: bigint }
