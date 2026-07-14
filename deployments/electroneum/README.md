@@ -70,21 +70,22 @@ Expected result: ~33 contracts including `ENSRegistry` (plain, no legacy fallbac
 
 ## 6. Verify the deployment
 
-Using the addresses from `deployments/electroneumTestnet/`, with `RPC=https://rpc.ankr.com/electroneum_testnet` (requires [foundry](https://getfoundry.sh) for `cast`):
+Run the automated verification script against the deployed network:
 
 ```bash
-# .etn node is owned by the BaseRegistrar:
-cast call <ENSRegistry> 'owner(bytes32)(address)' $(cast namehash etn) -r $RPC
-
-# controller is live and priced (label, duration in seconds):
-cast call <ETHRegistrarController> 'rentPrice(string,uint256)((uint256,uint256))' testname 2419200 -r $RPC
-
-# oracle value and ownership:
-cast call <OwnedUsdOracle> 'latestAnswer()(int256)' -r $RPC
-cast call <OwnedUsdOracle> 'owner()(address)' -r $RPC   # must be the OWNER_KEY address
+NETWORK=electroneumTestnet RPC_URL=<your RPC> \
+TEST_KEY=<throwaway funded wallet key> \
+OWNER_KEY=<owner wallet key> \
+bun ./scripts/verify-deployment.ts
 ```
 
-Then exercise the full commit→register flow once from a test wallet (`commit()`, wait 60s — the configured `minCommitmentAge` — then `register()` with the value from `rentPrice`), and check the name resolves via `PublicResolver`.
+It reads addresses and ABIs from the deployment records and runs three phases (each key is optional — omitting it skips that phase):
+
+1. **Wiring checks** (read-only, free): `.etn`/`.reverse` node ownership and resolvers, registrar security-controller ownership, oracle value, canonical Multicall3/UniversalSigValidator code, reserved names, pricing sanity.
+2. **User round-trip** (`TEST_KEY`, costs testnet ETN and waits out the 60s commitment age): commit → register with reverse record → forward + reverse resolution → excess-payment refund → re-registration revert → renewal.
+3. **Operational drills** (`OWNER_KEY`): oracle ownership, price-adjustment round-trip (double the value, watch rent halve, restore), controller fee withdrawal.
+
+The script exits non-zero if any check fails. For mainnet, run the same command with `NETWORK=electroneum`.
 
 ## 7. Operate the price oracle
 
