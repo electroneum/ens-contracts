@@ -1,7 +1,8 @@
 import { artifacts, deployScript } from '@rocketh'
+import { getAddress, type Address } from 'viem'
 
 export default deployScript(
-  async ({ deploy, get, execute: write, namedAccounts }) => {
+  async ({ deploy, get, read, execute: write, namedAccounts }) => {
     const { deployer, owner } = namedAccounts
 
     const registrar = get<
@@ -15,7 +16,12 @@ export default deployScript(
       args: [registrar.address, wrapper.address],
     })
 
-    if (owner && owner !== deployer) {
+    // Transfer ownership to owner (skip if a previous run already did)
+    const currentOwner = await read(migrationHelper, {
+      functionName: 'owner',
+      args: [],
+    }).then((v) => getAddress(v as Address))
+    if (owner && owner !== deployer && currentOwner !== getAddress(owner)) {
       console.log(`  - Transferring ownership to ${owner}`)
       await write(migrationHelper, {
         account: deployer,
