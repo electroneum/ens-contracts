@@ -14,6 +14,7 @@ export const RESERVED_NAMES = [
   'official',
   'electroneum',
   'etn',
+  'planetzephyros',
   'resolver',
 ]
 
