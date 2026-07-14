@@ -17,7 +17,7 @@ import {BytesUtils} from "./BytesUtils.sol";
 ///
 library NameCoder {
     /// @dev The namehash of "etn".
-    bytes32 private constant ETN_NODE =
+    bytes32 public constant ETN_NODE =
         0x69a3977d40595dbc343e3fa6ddbd26dbe31cc237836622384941b3c5148974cd;
 
     /// @dev The label was empty.
@@ -360,7 +360,7 @@ library NameCoder {
     }
 
     /// @dev Transform `label` to DNS-encoded `{label}.etn`.
-    ///      * `etnName("etn") = "\x04test\x03etn\x00"`
+    ///      * `etnName("test") = "\x04test\x03etn\x00"`
     ///      Behaves like `addLabel()`.
     ///
     /// @param label The label to encode.
