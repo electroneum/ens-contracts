@@ -55,7 +55,7 @@ async function fixture() {
 const loadFixture = async () => connection.networkHelpers.loadFixture(fixture)
 
 describe('ReverseClaimer', () => {
-  it.skip('claims a reverse node to the msg.sender of the deployer (skipped: unresolved, pre-existing issue)', async () => {
+  it('claims a reverse node to the msg.sender of the deployer', async () => {
     const { ensRegistry, nameWrapper } = await loadFixture()
 
     await expect(
@@ -63,7 +63,7 @@ describe('ReverseClaimer', () => {
     ).resolves.toEqualAddress(accounts[0].address)
   })
 
-  it.skip('claims a reverse node to an address specified by the deployer (skipped: unresolved, pre-existing issue)', async () => {
+  it('claims a reverse node to an address specified by the deployer', async () => {
     const { ensRegistry } = await loadFixture()
 
     const mockReverseClaimerImplementer = await connection.viem.deployContract(

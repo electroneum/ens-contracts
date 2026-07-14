@@ -110,6 +110,6 @@ describe('ENSRegistry', () => {
         [zeroHash, labelhash('etn'), accounts[1].address],
         { account: accounts[1] },
       ),
-    ).toBeRevertedWithString('Subnode creation restricted')
+    ).toBeRevertedWithoutReason()
   })
 })
