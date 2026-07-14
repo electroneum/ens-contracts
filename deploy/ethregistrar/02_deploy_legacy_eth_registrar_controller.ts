@@ -14,8 +14,14 @@ export default deployScript(
     get,
     execute: write,
     namedAccounts,
+    network,
     registerLegacyNames,
   }) => {
+    // The legacy controller is a pre-compiled Ethereum-mainnet artifact
+    // (its bytecode registers under namehash('eth')); it only exists for
+    // ENS migration history and is not deployed on non-legacy networks.
+    if (!network.tags?.legacy) return
+
     const { deployer, owner } = namedAccounts
 
     const registrar = get<

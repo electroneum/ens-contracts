@@ -28,11 +28,11 @@ export default deployScript(
       account: deployer,
     })
 
-    // 2. Set owner of eth node to registrar on root
-    console.log(`  - Setting owner of eth node to registrar on root`)
+    // 2. Set owner of etn node to registrar on root
+    console.log(`  - Setting owner of etn node to registrar on root`)
     await write(root, {
       functionName: 'setSubnodeOwner',
-      args: [labelhash('eth'), registrar.address],
+      args: [labelhash('etn'), registrar.address],
       account: owner,
     })
   },

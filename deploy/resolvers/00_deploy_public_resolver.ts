@@ -52,26 +52,26 @@ export default deployScript(
 
     const resolverEthOwner = await read(registry, {
       functionName: 'owner',
-      args: [namehash('resolver.eth')],
+      args: [namehash('resolver.etn')],
     })
 
     if (resolverEthOwner === owner) {
-      console.log(`  - Setting resolver for resolver.eth to PublicResolver`)
+      console.log(`  - Setting resolver for resolver.etn to PublicResolver`)
       await write(registry, {
         functionName: 'setResolver',
-        args: [namehash('resolver.eth'), publicResolver.address],
+        args: [namehash('resolver.etn'), publicResolver.address],
         account: owner,
       })
 
-      console.log(`  - Setting addr for resolver.eth to PublicResolver`)
+      console.log(`  - Setting addr for resolver.etn to PublicResolver`)
       await write(publicResolver, {
         functionName: 'setAddr',
-        args: [namehash('resolver.eth'), publicResolver.address],
+        args: [namehash('resolver.etn'), publicResolver.address],
         account: owner,
       })
     } else {
       console.warn(
-        `  - WARN: resolver.eth is not owned by the owner address, not setting resolver`,
+        `  - WARN: resolver.etn is not owned by the owner address, not setting resolver`,
       )
     }
   },

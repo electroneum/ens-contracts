@@ -58,6 +58,18 @@ const config = {
       chainId: 1,
       accounts: realAccounts,
     },
+    electroneum: {
+      type: 'http',
+      url: 'https://rpc.electroneum.com',
+      chainId: 52014,
+      accounts: realAccounts,
+    },
+    electroneumTestnet: {
+      type: 'http',
+      url: 'https://rpc.ankr.com/electroneum_testnet',
+      chainId: 5201420,
+      accounts: realAccounts,
+    },
     optimism: {
       type: 'http',
       url: optimism.rpcUrls.default.http[0],

@@ -26,7 +26,7 @@ export default deployScript(
       (typeof artifacts.BaseRegistrarImplementation)['abi']
     >('BaseRegistrarImplementation')
 
-    console.log(`  - Setting resolver for .eth to ${ethOwnedResolver.address}`)
+    console.log(`  - Setting resolver for .etn to ${ethOwnedResolver.address}`)
     await write(registrar, {
       functionName: 'setResolver',
       args: [ethOwnedResolver.address],

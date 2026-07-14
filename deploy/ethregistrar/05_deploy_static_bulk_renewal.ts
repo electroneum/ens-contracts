@@ -23,23 +23,23 @@ export default deployScript(
     const interfaceId = createInterfaceId(bulkRenewal.abi)
     const resolver = await read(registry, {
       functionName: 'resolver',
-      args: [namehash('eth')],
+      args: [namehash('etn')],
     })
     if (resolver === zeroAddress) {
       console.warn(
-        `  - WARN: No resolver set for .eth; not setting interface ${interfaceId} for BulkRenewal`,
+        `  - WARN: No resolver set for .etn; not setting interface ${interfaceId} for BulkRenewal`,
       )
       return
     }
 
     console.log(
-      `  - Setting BulkRenewal interface ID ${interfaceId} on .eth resolver`,
+      `  - Setting BulkRenewal interface ID ${interfaceId} on .etn resolver`,
     )
     await write(
       { ...artifacts.OwnedResolver, address: resolver },
       {
         functionName: 'setInterface',
-        args: [namehash('eth'), interfaceId, bulkRenewal.address],
+        args: [namehash('etn'), interfaceId, bulkRenewal.address],
         account: owner,
       },
     )
