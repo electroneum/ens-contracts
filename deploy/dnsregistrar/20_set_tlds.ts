@@ -26,6 +26,7 @@ const multicallAbi = parseAbi([
 export default deployScript(
   async ({
     get,
+    getOrNull,
     read,
     tx,
     namedAccounts: { deployer },
@@ -33,6 +34,12 @@ export default deployScript(
     config,
     savePendingExecution,
   }) => {
+    // Use the recorded Multicall3 deployment when there is one — on chains
+    // that reject the canonical pre-EIP-155 deployment (e.g. Electroneum),
+    // 00_deploy_multicall falls back to a non-canonical address.
+    const multicall = getOrNull('Multicall3')
+    const multicallAddressToUse = multicall?.address ?? multicallAddress
+
     const registry = get<(typeof artifacts.ENSRegistry)['abi']>('ENSRegistry')
     const publicSuffixList = get<
       (typeof artifacts.SimplePublicSuffixList)['abi']
@@ -111,7 +118,7 @@ export default deployScript(
 
       console.log(`  - Enabling ${batch.length} suffixes`)
       await tx({
-        to: multicallAddress,
+        to: multicallAddressToUse,
         data: encodeFunctionData({
           abi: multicallAbi,
           functionName: 'aggregate',
