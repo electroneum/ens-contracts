@@ -38,13 +38,15 @@ bunx hardhat keystore set OWNER_KEY
 
 Alternative: export them as plain environment variables of the same names.
 
-## 3. (Optional) set the initial ETN/USD oracle value
+## 3. Set the deployment environment variables
 
 ```bash
-export ETN_USD_ORACLE_VALUE=86000   # USD per ETN, 8 decimals: 86000 = $0.00086
+export BATCH_GATEWAY_URLS='["x-batch-gateway:true"]'   # required
+export ETN_USD_ORACLE_VALUE=86000                      # optional; USD per ETN, 8 decimals: 86000 = $0.00086
 ```
 
-Defaults to `86000` if unset. This is only the *initial* value — you update it later with `OwnedUsdOracle.set()` (step 7), so a rough value is fine.
+- `BATCH_GATEWAY_URLS` (**required**, the pipeline aborts without it): the CCIP-Read batch-gateway URL list stored in the on-chain `BatchGatewayProvider` and served to clients by `UniversalResolver`. `x-batch-gateway:true` tells modern clients (viem ≥2.x) to run the batch gateway locally instead of calling an external service — the right choice for Electroneum since it avoids depending on ENS Labs' hosted gateway. The list is owner-updatable later via `BatchGatewayProvider.setGateways()`.
+- `ETN_USD_ORACLE_VALUE` defaults to `86000` if unset. This is only the *initial* value — you update it later with `OwnedUsdOracle.set()` (step 7), so a rough value is fine.
 
 ## 4. Sanity-check the pipeline locally
 

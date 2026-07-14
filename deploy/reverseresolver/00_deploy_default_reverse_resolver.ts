@@ -1,5 +1,5 @@
 import { artifacts, deployScript } from '@rocketh'
-import { namehash } from 'viem'
+import { getAddress, labelhash, namehash, type Address } from 'viem'
 
 export default deployScript(
   async ({ deploy, get, read, execute: write, namedAccounts, network }) => {
@@ -19,25 +19,40 @@ export default deployScript(
 
     if (network.name === 'mainnet' && !network.tags.tenderly) return
 
+    // Normalize before comparing: on-chain reads come back checksummed while
+    // configured accounts may be lowercase; a raw === mismatch silently
+    // skipped this whole setup.
     const currentRootOwner = await read(root, {
       functionName: 'owner',
       args: [],
-    })
+    }).then((v) => getAddress(v as Address))
     const currentReverseOwner = await read(registry, {
       functionName: 'owner',
       args: [namehash('reverse')],
-    })
-    if (currentRootOwner === owner && currentReverseOwner !== owner) {
+    }).then((v) => getAddress(v as Address))
+    if (
+      currentRootOwner === getAddress(owner) &&
+      currentReverseOwner !== getAddress(owner)
+    ) {
       console.log(`  - Setting owner of .reverse to owner on root`)
       await write(root, {
-        functionName: 'transferOwnership',
-        args: [owner],
-        account: deployer,
+        functionName: 'setSubnodeOwner',
+        args: [labelhash('reverse'), owner],
+        account: owner,
       })
-    } else if (currentRootOwner !== owner) {
+    } else if (currentRootOwner !== getAddress(owner)) {
       console.warn(
         `  - WARN: Root owner account not available, skipping .reverse setup on registry`,
       )
+      return
+    }
+
+    const currentResolver = await read(registry, {
+      functionName: 'resolver',
+      args: [namehash('reverse')],
+    }).then((v) => getAddress(v as Address))
+    if (currentResolver === getAddress(defaultReverseResolver.address)) {
+      console.log(`  - Resolver of .reverse already set`)
       return
     }
 

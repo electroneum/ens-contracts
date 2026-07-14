@@ -1,5 +1,5 @@
 import { artifacts, deployScript } from '@rocketh'
-import { zeroAddress, zeroHash } from 'viem'
+import { getAddress, zeroAddress, zeroHash, type Address } from 'viem'
 
 export default deployScript(
   async ({
@@ -57,15 +57,15 @@ export default deployScript(
       const rootOwner = await read(registry, {
         functionName: 'owner',
         args: [zeroHash],
-      })
-      if (rootOwner === deployer) {
+      }).then((v) => getAddress(v as Address))
+      if (rootOwner === getAddress(deployer)) {
         console.log('  - Setting final owner of root node on registry')
         await write(registry, {
           functionName: 'setOwner',
           args: [zeroHash, owner],
           account: deployer,
         })
-      } else if (rootOwner !== owner) {
+      } else if (rootOwner !== getAddress(owner)) {
         console.warn(
           `  - WARN: Registry is owned by ${rootOwner}; cannot transfer to owner`,
         )

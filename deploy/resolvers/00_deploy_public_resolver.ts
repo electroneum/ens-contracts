@@ -53,9 +53,9 @@ export default deployScript(
     const resolverEthOwner = await read(registry, {
       functionName: 'owner',
       args: [namehash('resolver.etn')],
-    })
+    }).then((v) => getAddress(v as Address))
 
-    if (resolverEthOwner === owner) {
+    if (resolverEthOwner === getAddress(owner)) {
       console.log(`  - Setting resolver for resolver.etn to PublicResolver`)
       await write(registry, {
         functionName: 'setResolver',
