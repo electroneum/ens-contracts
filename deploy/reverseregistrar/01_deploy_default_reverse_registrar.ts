@@ -1,7 +1,8 @@
 import { artifacts, deployScript } from '@rocketh'
+import { getAddress, type Address } from 'viem'
 
 export default deployScript(
-  async ({ deploy, execute: write, namedAccounts }) => {
+  async ({ deploy, read, execute: write, namedAccounts }) => {
     const { deployer, owner } = namedAccounts
 
     const defaultReverseRegistrar = await deploy('DefaultReverseRegistrar', {
@@ -9,8 +10,12 @@ export default deployScript(
       artifact: artifacts.DefaultReverseRegistrar,
     })
 
-    // Transfer ownership to owner
-    if (owner !== deployer) {
+    // Transfer ownership to owner (skip if a previous run already did)
+    const currentOwner = await read(defaultReverseRegistrar, {
+      functionName: 'owner',
+      args: [],
+    }).then((v) => getAddress(v as Address))
+    if (owner !== deployer && currentOwner !== getAddress(owner)) {
       console.log(
         `  - Transferring ownership of DefaultReverseRegistrar to ${owner}`,
       )

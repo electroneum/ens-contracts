@@ -18,6 +18,11 @@ export default deployScript(
     network,
     registerWrappedNames,
   }) => {
+    // The wrapped controller is a pre-compiled Ethereum-mainnet artifact
+    // (its bytecode registers under namehash('eth')); it only exists for
+    // ENS migration history and is not deployed on non-legacy networks.
+    if (!network.tags?.legacy) return
+
     const { deployer, owner } = namedAccounts
 
     const registry = get<(typeof artifacts.ENSRegistry)['abi']>('ENSRegistry')

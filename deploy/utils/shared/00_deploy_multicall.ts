@@ -1,5 +1,7 @@
 import { deployScript } from '@rocketh'
-import { parseAbi, parseEther } from 'viem'
+import type { Artifact } from 'rocketh'
+import { parseAbi, parseEther, parseTransaction } from 'viem'
+import { isUnprotectedTxRejection } from '../../../scripts/unprotected_tx.js'
 
 const multicallAddress = '0xcA11bde05977b3631167028862bE2a173976CA11'
 const multicallPreparationAddress = '0x1E91557322053858cf75cFE5b2d030D27cb2cA8D'
@@ -31,6 +33,7 @@ const fullAbi = [
 
 export default deployScript(
   async ({
+    deploy,
     tx,
     namedAccounts: { deployer },
     network,
@@ -48,22 +51,68 @@ export default deployScript(
       return
     }
 
-    await tx({
-      to: '0x05f32B3cC3888453ff71B01135B34FF8e41263F2',
-      value: parseEther('1'),
-      account: deployer,
-    })
+    const sendPresigned = () =>
+      network.provider.request({
+        method: 'eth_sendRawTransaction',
+        params: [multicallDeployTransaction],
+      }) as Promise<`0x${string}`>
 
-    await tx({
-      to: multicallPreparationAddress,
-      value: parseEther('1'),
-      account: deployer,
-    })
+    const deployNonCanonical = async () => {
+      console.log(
+        `  - RPC rejects pre-EIP-155 transactions; deploying Multicall3 at a non-canonical address`,
+      )
+      const creationBytecode = parseTransaction(multicallDeployTransaction).data
+      if (!creationBytecode)
+        throw new Error(
+          'could not extract Multicall3 creation bytecode from pre-signed tx',
+        )
+      const multicall = await deploy('Multicall3', {
+        account: deployer,
+        artifact: {
+          abi: parseAbi(fullAbi),
+          bytecode: creationBytecode,
+          metadata: '',
+        } as unknown as Artifact<ReturnType<typeof parseAbi<typeof fullAbi>>>,
+      })
+      console.log(`  - Multicall3 deployed at ${multicall.address}`)
+    }
 
-    const deployHash = await network.provider.request({
-      method: 'eth_sendRawTransaction',
-      params: [multicallDeployTransaction],
-    })
+    // The canonical Multicall3 deployment is a pre-signed, pre-EIP-155
+    // transaction (Nick's method). Probe with it BEFORE sending any funding:
+    // go-ethereum-based nodes without --rpc.allow-unprotected-txs (e.g.
+    // Electroneum's etn-sc) reject it, and the funding would otherwise be
+    // stranded at the keyless deployer address.
+    let deployHash: `0x${string}` | undefined
+    try {
+      deployHash = await sendPresigned()
+    } catch (err) {
+      if (isUnprotectedTxRejection(err)) {
+        await deployNonCanonical()
+        return
+      }
+      // Any other error (typically insufficient funds at the pre-signed
+      // deployer address) means the canonical path is viable: fund it and
+      // broadcast again.
+      await tx({
+        to: '0x05f32B3cC3888453ff71B01135B34FF8e41263F2',
+        value: parseEther('1'),
+        account: deployer,
+      })
+
+      await tx({
+        to: multicallPreparationAddress,
+        value: parseEther('1'),
+        account: deployer,
+      })
+
+      try {
+        deployHash = await sendPresigned()
+      } catch (err2) {
+        if (!isUnprotectedTxRejection(err2)) throw err2
+        await deployNonCanonical()
+        return
+      }
+    }
     await savePendingDeployment({
       type: 'deployment',
       name: 'Multicall3',

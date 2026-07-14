@@ -85,7 +85,6 @@ export const shouldRespectConstraints = (connection: NetworkConnection) => {
         zeroAddress,
       ])
 
-      console.log('nameWrapper address:', nameWrapper.address)
       await nameWrapper.write.setSubnodeOwner([
         parentNode,
         childLabel,

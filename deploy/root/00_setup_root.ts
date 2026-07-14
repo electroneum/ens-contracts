@@ -18,12 +18,24 @@ export default deployScript(
       (typeof artifacts.RootSecurityController)['abi']
     >('RootSecurityController')
 
-    console.log(`  - Setting owner of root node to root contract`)
-    await write(registry, {
-      functionName: 'setOwner',
-      args: [zeroHash, root.address],
-      account: deployer,
-    })
+    // Idempotency: a previous (possibly interrupted) run may have already
+    // transferred the root node, in which case the deployer is no longer
+    // authorised to call setOwner and the tx would revert.
+    const rootNodeOwner = await read(registry, {
+      functionName: 'owner',
+      args: [zeroHash],
+    }).then((v) => getAddress(v as Address))
+
+    if (rootNodeOwner !== getAddress(root.address)) {
+      console.log(`  - Setting owner of root node to root contract`)
+      await write(registry, {
+        functionName: 'setOwner',
+        args: [zeroHash, root.address],
+        account: deployer,
+      })
+    } else {
+      console.log(`  - Root node already owned by root contract`)
+    }
 
     const rootOwner = await read(root, {
       functionName: 'owner',

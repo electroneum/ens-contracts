@@ -30,6 +30,17 @@ export const config = {
       rpcUrl: `https://mainnet.infura.io/v3/${process.env.INFURA_API_KEY}`,
       tags: ['legacy', 'use_root'],
     },
+    // Electroneum networks: no 'legacy' tag (fresh deployment, no ENS
+    // migration history) and 'owned_oracle' selects the manually-updated
+    // OwnedUsdOracle since Electroneum has no on-chain USD price feed.
+    electroneum: {
+      rpcUrl: `https://rpc.ankr.com/electroneum/${process.env.ANKR_API_KEY}`,
+      tags: ['use_root', 'owned_oracle'],
+    },
+    electroneumTestnet: {
+      rpcUrl: `https://rpc.ankr.com/electroneum_testnet/${process.env.ANKR_API_KEY}`,
+      tags: ['test', 'use_root', 'owned_oracle'],
+    },
   },
 } as const satisfies UserConfig
 

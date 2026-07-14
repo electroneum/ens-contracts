@@ -13,7 +13,12 @@ const realAccounts = [
   configVariable('OWNER_KEY'),
 ]
 
-import { arbitrum, optimism } from 'viem/chains'
+import {
+  arbitrum,
+  electroneum,
+  electroneumTestnet,
+  optimism,
+} from 'viem/chains'
 
 dotenv.config({ debug: false })
 
@@ -58,6 +63,18 @@ const config = {
       chainId: 1,
       accounts: realAccounts,
     },
+    electroneum: {
+      type: 'http',
+      url: `https://rpc.ankr.com/electroneum/${process.env.ANKR_API_KEY}`,
+      chainId: electroneum.id,
+      accounts: realAccounts,
+    },
+    electroneumTestnet: {
+      type: 'http',
+      url: `https://rpc.ankr.com/electroneum_testnet/${process.env.ANKR_API_KEY}`,
+      chainId: electroneumTestnet.id,
+      accounts: realAccounts,
+    },
     optimism: {
       type: 'http',
       url: optimism.rpcUrls.default.http[0],
@@ -94,6 +111,10 @@ const config = {
             enabled: true,
             runs: 1200,
           },
+          metadata: {
+            bytecodeHash: 'ipfs',
+            useLiteralContent: true,
+          },
         },
       },
     ],
@@ -104,6 +125,14 @@ const config = {
           optimizer: {
             enabled: true,
             runs: 1200,
+          },
+          // useLiteralContent embeds source code in the metadata, so the
+          // deployment records are self-contained for explorer verification
+          // (without it the testnet NameWrapper needed manual source
+          // resolution to verify on Blockscout)
+          metadata: {
+            bytecodeHash: 'ipfs',
+            useLiteralContent: true,
           },
         },
       },
@@ -165,6 +194,16 @@ const config = {
         description: 'The ENS label to seed subdomains',
       })
       .setAction(() => import('./tasks/seed.js'))
+      .build(),
+    task(
+      'verify-deployment',
+      'Runs post-deployment verification against the connected network',
+    )
+      .addFlag({
+        name: 'readOnly',
+        description: 'Only run the read-only wiring checks (phase 1)',
+      })
+      .setAction(() => import('./tasks/verify_deployment.js'))
       .build(),
   ],
 } satisfies HardhatUserConfig

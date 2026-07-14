@@ -57,7 +57,7 @@ function encodeAnchors(anchors: any[]): Hex {
 }
 
 export default deployScript(
-  async ({ deploy, get, execute: write, namedAccounts, network }) => {
+  async ({ deploy, get, read, execute: write, namedAccounts, network }) => {
     const { deployer } = namedAccounts
 
     const anchors = realAnchors.slice()
@@ -87,8 +87,18 @@ export default deployScript(
 
     const dnssec = get('DNSSECImpl')
 
+    // Idempotency: skip algorithms/digests that are already set so reruns
+    // of the pipeline don't re-broadcast these transactions.
     for (const [id, contractName] of Object.entries(algorithms)) {
       const algorithm = get(contractName)
+      const current = (await read(dnssec, {
+        functionName: 'algorithms',
+        args: [parseInt(id)],
+      })) as string
+      if (current.toLowerCase() === algorithm.address.toLowerCase()) {
+        console.log(`  - Algorithm ${id} already set: ${contractName}`)
+        continue
+      }
       console.log(`  - Setting algorithm ${id}: ${contractName}`)
       await write(dnssec, {
         functionName: 'setAlgorithm',
@@ -100,6 +110,14 @@ export default deployScript(
     // Set up digests
     for (const [id, contractName] of Object.entries(digests)) {
       const digest = get(contractName)
+      const current = (await read(dnssec, {
+        functionName: 'digests',
+        args: [parseInt(id)],
+      })) as string
+      if (current.toLowerCase() === digest.address.toLowerCase()) {
+        console.log(`  - Digest ${id} already set: ${contractName}`)
+        continue
+      }
       console.log(`  - Setting digest ${id}: ${contractName}`)
       await write(dnssec, {
         functionName: 'setDigest',

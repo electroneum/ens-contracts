@@ -1,0 +1,17 @@
+diff --git a/dist/index.js b/dist/index.js
+index 39e12d9fce280465c7b355d186d3607b56aa7860..5d09ffb8511a70fa969a519dccc48c351d185ad3 100644
+--- a/dist/index.js
++++ b/dist/index.js
+@@ -119,7 +119,11 @@ export function read(env) {
+                     data: calldata,
+                     // value: `0x${viemArgs.value?.toString(16)}` as `0x${string}`,
+                 },
+-            ], // TODO fix eip-1193 ?,,
++                // go-ethereum nodes (e.g. Electroneum's etn-sc) require the
++                // block parameter for eth_call; upstream fixed this the same
++                // way in @rocketh/read-execute 0.19.x
++                'latest',
++            ],
+         }));
+         const parsed = decodeFunctionResult({
+             abi,
