@@ -49,6 +49,9 @@
       },
     },
   },
+  "patchedDependencies": {
+    "@rocketh/read-execute@0.14.0": "patches/@rocketh%2Fread-execute@0.14.0.patch",
+  },
   "overrides": {
     "hardhat": "3.1.4",
   },

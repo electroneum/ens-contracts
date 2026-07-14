@@ -103,5 +103,6 @@ Same as step 5 with `--network electroneum` (records land in this directory). Up
 
 ## Notes
 
+- Electroneum's node (etn-sc, a go-ethereum fork) requires the block parameter for `eth_call`, which rocketh 0.14 omits (fixed upstream in 0.19). The repo carries a one-line patch in `patches/` (applied automatically by `bun install`) — without it, the pipeline fails at the first on-chain read (`00_setup_root.ts`) with `missing value for required argument 1`.
 - The DNSSEC/DNS-registrar contracts deploy as part of the upstream pipeline; they are inert on Electroneum (no real DNS `.etn` TLD) and were kept to stay close to upstream.
 - To change rent tiers later, deploy a new price oracle contract and point the controller at it; day-to-day price adjustments should only need `OwnedUsdOracle.set()`.
