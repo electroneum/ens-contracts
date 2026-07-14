@@ -13,7 +13,12 @@ const realAccounts = [
   configVariable('OWNER_KEY'),
 ]
 
-import { arbitrum, optimism } from 'viem/chains'
+import {
+  arbitrum,
+  electroneum,
+  electroneumTestnet,
+  optimism,
+} from 'viem/chains'
 
 dotenv.config({ debug: false })
 
@@ -60,14 +65,14 @@ const config = {
     },
     electroneum: {
       type: 'http',
-      url: 'https://rpc.electroneum.com',
-      chainId: 52014,
+      url: `https://rpc.ankr.com/electroneum/${process.env.ANKR_API_KEY}`,
+      chainId: electroneum.id,
       accounts: realAccounts,
     },
     electroneumTestnet: {
       type: 'http',
-      url: 'https://rpc.ankr.com/electroneum_testnet',
-      chainId: 5201420,
+      url: `https://rpc.ankr.com/electroneum_testnet/${process.env.ANKR_API_KEY}`,
+      chainId: electroneumTestnet.id,
       accounts: realAccounts,
     },
     optimism: {

@@ -34,11 +34,11 @@ export const config = {
     // migration history) and 'owned_oracle' selects the manually-updated
     // OwnedUsdOracle since Electroneum has no on-chain USD price feed.
     electroneum: {
-      rpcUrl: 'https://rpc.electroneum.com',
+      rpcUrl: `https://rpc.ankr.com/electroneum/${process.env.ANKR_API_KEY}`,
       tags: ['use_root', 'owned_oracle'],
     },
     electroneumTestnet: {
-      rpcUrl: 'https://rpc.ankr.com/electroneum_testnet',
+      rpcUrl: `https://rpc.ankr.com/electroneum_testnet/${process.env.ANKR_API_KEY}`,
       tags: ['test', 'use_root', 'owned_oracle'],
     },
   },

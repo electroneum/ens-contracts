@@ -41,6 +41,7 @@ Alternative: export them as plain environment variables of the same names.
 ## 3. Set the deployment environment variables
 
 ```bash
+export ANKR_API_KEY=<your Ankr API key>                # required: the configured RPC URLs are keyed on it
 export BATCH_GATEWAY_URLS='["x-batch-gateway:true"]'   # required
 export ETN_USD_ORACLE_VALUE=86000                      # optional; USD per ETN, 8 decimals: 86000 = $0.00086
 ```
