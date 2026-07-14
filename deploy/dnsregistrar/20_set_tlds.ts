@@ -8,6 +8,43 @@ import {
 } from 'viem'
 import { dnsEncodeName } from '../../test/fixtures/dnsEncodeName.js'
 import { fetchPublicSuffixes } from './05_deploy_public_suffix_list.js'
+import { describeError } from '../../scripts/unprotected_tx.js'
+
+async function mapWithConcurrency<T, R>(
+  items: T[],
+  limit: number,
+  fn: (item: T) => Promise<R>,
+): Promise<R[]> {
+  const results: R[] = new Array(items.length)
+  let next = 0
+  await Promise.all(
+    Array.from({ length: Math.min(limit, items.length) }, async () => {
+      while (true) {
+        const i = next++
+        if (i >= items.length) return
+        results[i] = await fn(items[i])
+      }
+    }),
+  )
+  return results
+}
+
+async function withRateLimitRetry<R>(fn: () => Promise<R>): Promise<R> {
+  let delay = 1000
+  for (let attempt = 0; ; attempt++) {
+    try {
+      return await fn()
+    } catch (err) {
+      const rateLimited = /limit exceeded|too many requests|rate.?limit|429/i.test(
+        describeError(err),
+      )
+      if (!rateLimited || attempt >= 6) throw err
+      console.log(`  - Rate limited by RPC; retrying in ${delay}ms`)
+      await new Promise((resolve) => setTimeout(resolve, delay))
+      delay = Math.min(delay * 2, 15_000)
+    }
+  }
+}
 
 // using the Multicall3 contract, which is deployed on pretty much every live chain in existence at 0xcA11bde05977b3631167028862bE2a173976CA11
 // for devnet deployments, the same contract address can be used since we can use the pre-signed deploy transaction
@@ -52,8 +89,13 @@ export default deployScript(
       network.tags?.allow_unsafe ||
       (network.tags?.test && !config.saveDeployments)
 
-    let suffixes = await Promise.all(
-      fetchedSuffixes.map(async (suffix) => {
+    // Bounded concurrency: the owner/PSL checks previously ran as a single
+    // unbounded Promise.all (~2,500 concurrent eth_calls), which trips the
+    // rate limits of public RPC endpoints (HTTP 429).
+    let suffixes = await mapWithConcurrency(
+      fetchedSuffixes,
+      allowUnsafe ? 100 : 10,
+      async (suffix) => {
         if (!suffix.match(/^[a-z0-9]+$/)) return null
 
         const node = namehash(suffix)
@@ -71,34 +113,31 @@ export default deployScript(
         // Skip owner checks for test networks
         if (allowUnsafe) return returnData
 
-        const owner = await read(registry, {
-          functionName: 'owner',
-          args: [node],
-        })
+        const owner = await withRateLimitRetry(() =>
+          read(registry, {
+            functionName: 'owner',
+            args: [node],
+          }),
+        )
         if (owner === dnsRegistrar.address) {
           console.warn(`  - Skipping .${suffix}; already owned`)
           return null
         }
 
-        const isPublicSuffix = await read(publicSuffixList, {
-          functionName: 'isPublicSuffix',
-          args: [encodedSuffix],
-        })
+        const isPublicSuffix = await withRateLimitRetry(() =>
+          read(publicSuffixList, {
+            functionName: 'isPublicSuffix',
+            args: [encodedSuffix],
+          }),
+        )
 
         if (!isPublicSuffix) {
           console.warn(`  - Skipping .${suffix}; not in the PSL`)
           return null
         }
 
-        return {
-          target: dnsRegistrar.address,
-          callData: encodeFunctionData({
-            abi: dnsRegistrar.abi,
-            functionName: 'enableNode',
-            args: [encodedSuffix],
-          }),
-        }
-      }),
+        return returnData
+      },
     ).then((suffixes) =>
       suffixes.filter(
         (suffix): suffix is { target: Address; callData: Hex } =>

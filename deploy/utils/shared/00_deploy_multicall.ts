@@ -1,6 +1,7 @@
 import { deployScript } from '@rocketh'
 import type { Artifact } from 'rocketh'
 import { parseAbi, parseEther, parseTransaction } from 'viem'
+import { isUnprotectedTxRejection } from '../../../scripts/unprotected_tx.js'
 
 const multicallAddress = '0xcA11bde05977b3631167028862bE2a173976CA11'
 const multicallPreparationAddress = '0x1E91557322053858cf75cFE5b2d030D27cb2cA8D'
@@ -55,26 +56,6 @@ export default deployScript(
         method: 'eth_sendRawTransaction',
         params: [multicallDeployTransaction],
       }) as Promise<`0x${string}`>
-
-    // Errors surface differently per provider: hardhat throws ProviderError
-    // instances, rocketh's JSONRPCHTTPProvider throws the raw JSON-RPC error
-    // object ({code, message}), possibly with nested cause/data. Collect all
-    // message text before matching.
-    const describeError = (e: unknown, depth = 0): string => {
-      if (e == null || depth > 4) return ''
-      const parts: string[] = []
-      if (typeof e === 'string') parts.push(e)
-      else if (typeof e === 'object') {
-        const anyErr = e as Record<string, unknown>
-        if (typeof anyErr.message === 'string') parts.push(anyErr.message)
-        parts.push(describeError(anyErr.cause, depth + 1))
-        parts.push(describeError(anyErr.data, depth + 1))
-        parts.push(describeError(anyErr.error, depth + 1))
-      }
-      return parts.filter(Boolean).join(' | ')
-    }
-    const isUnprotectedTxRejection = (e: unknown) =>
-      /replay.protected|eip.?155/i.test(describeError(e))
 
     const deployNonCanonical = async () => {
       console.log(
