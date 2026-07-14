@@ -1,0 +1,107 @@
+# Electroneum ENS deployment guide
+
+Step-by-step instructions for deploying the ENS contracts to the Electroneum Smart Chain using the repo's hardhat/rocketh pipeline (`deploy/**`). This is the single supported deployment path.
+
+Two networks are configured in `hardhat.config.ts` / `rocketh.ts`:
+
+| Network | Chain ID | RPC | Explorer |
+|---|---|---|---|
+| `electroneum` (mainnet) | 52014 | https://rpc.electroneum.com | https://blockexplorer.electroneum.com |
+| `electroneumTestnet` | 5201420 | https://rpc.ankr.com/electroneum_testnet | https://testnet-blockexplorer.electroneum.com |
+
+Deployment records for each network land in `deployments/electroneum/` and `deployments/electroneumTestnet/` respectively (this folder doubles as the mainnet record directory — the rocketh loader only reads `*.json`, so this README does not interfere).
+
+## 1. Install and compile
+
+```bash
+bun install
+bun run compile   # also regenerates generated/artifacts.ts used by the deploy scripts
+```
+
+## 2. Provide the deployment keys
+
+The pipeline uses two named accounts:
+
+| Account    | Source key     | Role |
+|------------|----------------|------|
+| `deployer` | `DEPLOYER_KEY` | Sends all contract-creation transactions |
+| `owner`    | `OWNER_KEY`    | Ends up owning everything: root controller, registrar security controller, NameWrapper, OwnedResolver, ETHRegistrarController, OwnedUsdOracle |
+
+Since Electroneum has no multisig, `OWNER_KEY` should be the single well-secured wallet. It may be the same key as `DEPLOYER_KEY` (the pipeline's ownership-transfer steps simply no-op when `owner === deployer`). Both accounts need ETN for gas.
+
+Preferred: store the keys in Hardhat's encrypted keystore (prompts for the value, never lands in shell history):
+
+```bash
+bunx hardhat keystore set DEPLOYER_KEY
+bunx hardhat keystore set OWNER_KEY
+```
+
+Alternative: export them as plain environment variables of the same names.
+
+## 3. (Optional) set the initial ETN/USD oracle value
+
+```bash
+export ETN_USD_ORACLE_VALUE=86000   # USD per ETN, 8 decimals: 86000 = $0.00086
+```
+
+Defaults to `86000` if unset. This is only the *initial* value — you update it later with `OwnedUsdOracle.set()` (step 7), so a rough value is fine.
+
+## 4. Sanity-check the pipeline locally
+
+```bash
+bun run test:deploy
+```
+
+Spins up an in-memory anvil node and runs the full pipeline end-to-end; prints the deployed-contract table in ~2s. Nothing touches a real network.
+
+## 5. Deploy to Electroneum testnet
+
+```bash
+bunx hardhat deploy --network electroneumTestnet
+```
+
+- The task shows what it's about to execute and asks for confirmation before sending transactions (`--skip-prompts` to run unattended).
+- Deployment records are written to `deployments/electroneumTestnet/` — **commit this directory** so addresses and ABIs are tracked, exactly like upstream tracks `deployments/mainnet/`.
+- The run is resumable/idempotent: if it fails partway (e.g. RPC hiccup), rerun the same command — already-deployed contracts are read from the records and skipped.
+
+Expected result: ~33 contracts including `ENSRegistry` (plain, no legacy fallback), `Root`, `BaseRegistrarImplementation`, `OwnedUsdOracle`, `ExponentialPremiumPriceOracle`, `ETHRegistrarController`, `ReverseRegistrar`, `DefaultReverseRegistrar`, `NameWrapper`, `PublicResolver`, `UniversalResolver`. `LegacyENSRegistry`, `LegacyETHRegistrarController`, `WrappedETHRegistrarController` and `LegacyPublicResolver` must **not** appear (they are gated behind the `legacy` rocketh network tag, which Electroneum networks don't carry).
+
+## 6. Verify the deployment
+
+Using the addresses from `deployments/electroneumTestnet/`, with `RPC=https://rpc.ankr.com/electroneum_testnet` (requires [foundry](https://getfoundry.sh) for `cast`):
+
+```bash
+# .etn node is owned by the BaseRegistrar:
+cast call <ENSRegistry> 'owner(bytes32)(address)' $(cast namehash etn) -r $RPC
+
+# controller is live and priced (label, duration in seconds):
+cast call <ETHRegistrarController> 'rentPrice(string,uint256)((uint256,uint256))' testname 2419200 -r $RPC
+
+# oracle value and ownership:
+cast call <OwnedUsdOracle> 'latestAnswer()(int256)' -r $RPC
+cast call <OwnedUsdOracle> 'owner()(address)' -r $RPC   # must be the OWNER_KEY address
+```
+
+Then exercise the full commit→register flow once from a test wallet (`commit()`, wait 60s — the configured `minCommitmentAge` — then `register()` with the value from `rentPrice`), and check the name resolves via `PublicResolver`.
+
+## 7. Operate the price oracle
+
+Electroneum has no on-chain ETN/USD feed, so pricing uses the manually-maintained `OwnedUsdOracle`. Registration/renewal pricing follows it directly: the rent tiers are set in USD terms inside `ExponentialPremiumPriceOracle` ($5/yr for 5+ characters, $160/yr for 4, $640/yr for 3, 21-day exponential premium after expiry) and converted to ETN at payment time using the oracle value.
+
+Update the value from the owner wallet whenever the ETN price moves materially:
+
+```bash
+cast send <OwnedUsdOracle> 'set(int256)' <newValue> --private-key $OWNER_KEY -r $RPC
+# e.g. ETN at $0.00100 → newValue 100000
+```
+
+`set()` is `onlyOwner`; the `DummyOracle` used on Ethereum test networks (publicly settable) is never deployed on Electroneum networks.
+
+## 8. Deploy to Electroneum mainnet
+
+Same as step 5 with `--network electroneum` (records land in this directory). Upstream's scripts skip the direct wiring steps on Ethereum mainnet because a multisig has to execute them; that special case keys off the network name `mainnet`, so on `electroneum` all wiring runs automatically from the single owner wallet — no manual follow-up transactions needed.
+
+## Notes
+
+- The DNSSEC/DNS-registrar contracts deploy as part of the upstream pipeline; they are inert on Electroneum (no real DNS `.etn` TLD) and were kept to stay close to upstream.
+- To change rent tiers later, deploy a new price oracle contract and point the controller at it; day-to-day price adjustments should only need `OwnedUsdOracle.set()`.
