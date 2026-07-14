@@ -70,20 +70,25 @@ Expected result: ~33 contracts including `ENSRegistry` (plain, no legacy fallbac
 
 ## 6. Verify the deployment
 
-Run the automated verification script against the deployed network:
+Run the automated verification through hardhat — network, RPC and keystore accounts come from `--network`:
+
+```bash
+bunx hardhat verify-deployment --network electroneumTestnet
+bunx hardhat verify-deployment --network electroneumTestnet --read-only   # phase 1 only
+```
+
+The phase-2 registrant defaults to the deployer account (the script clears the reverse record it sets, so no residue is left); set `TEST_KEY` to use a throwaway wallet instead. Standalone usage without hardhat is also supported:
 
 ```bash
 NETWORK=electroneumTestnet RPC_URL=<your RPC> \
-TEST_KEY=<throwaway funded wallet key> \
-OWNER_KEY=<owner wallet key> \
-bun ./scripts/verify-deployment.ts
+TEST_KEY=<registrant key> OWNER_KEY=<owner key> bun ./scripts/verify-deployment.ts
 ```
 
-It reads addresses and ABIs from the deployment records and runs three phases (each key is optional — omitting it skips that phase):
+It reads addresses and ABIs from the deployment records and runs three phases (skipped when the corresponding wallet is unavailable):
 
 1. **Wiring checks** (read-only, free): `.etn`/`.reverse` node ownership and resolvers, registrar security-controller ownership, oracle value, canonical Multicall3/UniversalSigValidator code, reserved names, pricing sanity.
-2. **User round-trip** (`TEST_KEY`, costs testnet ETN and waits out the 60s commitment age): commit → register with reverse record → forward + reverse resolution → excess-payment refund → re-registration revert → renewal.
-3. **Operational drills** (`OWNER_KEY`): oracle ownership, price-adjustment round-trip (double the value, watch rent halve, restore), controller fee withdrawal.
+2. **User round-trip** (costs ETN and waits out the 60s commitment age): commit → register with reverse record → forward + reverse resolution → reverse-record cleanup → excess-payment refund → re-registration revert → renewal.
+3. **Operational drills** (owner account): oracle ownership, price-adjustment round-trip (double the value, watch rent halve, restore), controller fee withdrawal.
 
 The script exits non-zero if any check fails. For mainnet, run the same command with `NETWORK=electroneum`.
 

@@ -1,17 +1,15 @@
 import { artifacts, deployScript } from '@rocketh'
 import { getAddress, labelhash, type Address } from 'viem'
+import {
+  RESERVATION_DURATION,
+  RESERVED_NAMES,
+} from '../../scripts/reserved_names.js'
 
-// Names reserved for Electroneum at launch. They are registered directly on
-// the base registrar (controller-only, no payment — registration fees only
-// exist in the public ETHRegistrarController) to the owner account, as
-// ordinary registrar NFTs: renewable, transferable and reclaimable like any
-// other .etn name.
-//
-// 'resolver' backs the legacy resolver.eth discovery convention:
-// 00_deploy_public_resolver points resolver.etn at the PublicResolver once
-// the owner account owns the name.
-const RESERVED_NAMES = ['wallet', 'pay', 'resolver']
-const RESERVATION_DURATION = 100n * 365n * 24n * 60n * 60n // 100 years
+// Names reserved for Electroneum at launch (see scripts/reserved_names.ts
+// for the list). They are registered directly on the base registrar
+// (controller-only, no payment — registration fees only exist in the public
+// ETHRegistrarController) to the owner account, as ordinary registrar NFTs:
+// renewable, transferable and reclaimable like any other .etn name.
 
 export default deployScript(
   async ({
@@ -68,8 +66,7 @@ export default deployScript(
 
     for (const label of pending) {
       console.log(
-        `  - Registering reserved name ${label}.etn to ${owner} for ${
-          RESERVATION_DURATION / (365n * 24n * 60n * 60n)
+        `  - Registering reserved name ${label}.etn to ${owner} for ${RESERVATION_DURATION / (365n * 24n * 60n * 60n)
         } years`,
       )
       await write(registrar, {

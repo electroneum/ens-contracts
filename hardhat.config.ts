@@ -178,6 +178,16 @@ const config = {
       })
       .setAction(() => import('./tasks/seed.js'))
       .build(),
+    task(
+      'verify-deployment',
+      'Runs post-deployment verification against the connected network',
+    )
+      .addFlag({
+        name: 'readOnly',
+        description: 'Only run the read-only wiring checks (phase 1)',
+      })
+      .setAction(() => import('./tasks/verify_deployment.js'))
+      .build(),
   ],
 } satisfies HardhatUserConfig
 
