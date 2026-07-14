@@ -111,6 +111,10 @@ const config = {
             enabled: true,
             runs: 1200,
           },
+          metadata: {
+            bytecodeHash: 'ipfs',
+            useLiteralContent: true,
+          },
         },
       },
     ],
@@ -121,6 +125,14 @@ const config = {
           optimizer: {
             enabled: true,
             runs: 1200,
+          },
+          // useLiteralContent embeds source code in the metadata, so the
+          // deployment records are self-contained for explorer verification
+          // (without it the testnet NameWrapper needed manual source
+          // resolution to verify on Blockscout)
+          metadata: {
+            bytecodeHash: 'ipfs',
+            useLiteralContent: true,
           },
         },
       },

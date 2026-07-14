@@ -47,7 +47,7 @@ export ETN_USD_ORACLE_VALUE=86000                      # optional; USD per ETN, 
 ```
 
 - `BATCH_GATEWAY_URLS` (**required**, the pipeline aborts without it): the CCIP-Read batch-gateway URL list stored in the on-chain `BatchGatewayProvider` and served to clients by `UniversalResolver`. `x-batch-gateway:true` tells modern clients (viem ≥2.x) to run the batch gateway locally instead of calling an external service — the right choice for Electroneum since it avoids depending on ENS Labs' hosted gateway. The list is owner-updatable later via `BatchGatewayProvider.setGateways()`.
-- `ETN_USD_ORACLE_VALUE` defaults to `86000` if unset. This is only the *initial* value — you update it later with `OwnedUsdOracle.set()` (step 7), so a rough value is fine.
+- `ETN_USD_ORACLE_VALUE` defaults to `86000` if unset. This is only the *initial* value — you update it later with `OwnedUsdOracle.set()` (step 8), so a rough value is fine.
 
 ## 4. Sanity-check the pipeline locally
 
@@ -93,7 +93,25 @@ It reads addresses and ABIs from the deployment records and runs three phases (s
 
 The script exits non-zero if any check fails. For mainnet, run the same command with `NETWORK=electroneum`.
 
-## 7. Operate the price oracle
+## 7. Verify contract source on the block explorer
+
+Both Electroneum explorers run Blockscout, and the deployment records contain everything needed (solc metadata with inline sources). Submit all contracts with:
+
+```bash
+# testnet
+bunx rocketh-verify -d deployments -n electroneumTestnet blockscout \
+  --endpoint https://testnet-blockexplorer.electroneum.com/api/v2
+
+# mainnet
+bunx rocketh-verify -d deployments -n electroneum blockscout \
+  --endpoint https://blockexplorer.electroneum.com/api/v2
+```
+
+Verification is asynchronous — rerun the command after a minute to confirm everything reports "already verified" (the tool skips verified contracts). Contracts without deployment records (canonical Multicall3 / create2 factory / UniversalSigValidator) are widely-known singletons; Blockscout typically auto-verifies them by bytecode match.
+
+Note: solc metadata only embeds source code when compiled with `metadata.useLiteralContent` — this is set for both compiler profiles in `hardhat.config.ts`. (The original testnet NameWrapper predated the 0.8.17 profile having it and required manual source submission.)
+
+## 8. Operate the price oracle
 
 Electroneum has no on-chain ETN/USD feed, so pricing uses the manually-maintained `OwnedUsdOracle`. Registration/renewal pricing follows it directly: the rent tiers are set in USD terms inside `ExponentialPremiumPriceOracle` ($5/yr for 5+ characters, $160/yr for 4, $640/yr for 3, 21-day exponential premium after expiry) and converted to ETN at payment time using the oracle value.
 
@@ -106,9 +124,9 @@ cast send <OwnedUsdOracle> 'set(int256)' <newValue> --private-key $OWNER_KEY -r 
 
 `set()` is `onlyOwner`; the `DummyOracle` used on Ethereum test networks (publicly settable) is never deployed on Electroneum networks.
 
-## 8. Deploy to Electroneum mainnet
+## 9. Deploy to Electroneum mainnet
 
-Same as step 5 with `--network electroneum` (records land in this directory). Upstream's scripts skip the direct wiring steps on Ethereum mainnet because a multisig has to execute them; that special case keys off the network name `mainnet`, so on `electroneum` all wiring runs automatically from the single owner wallet — no manual follow-up transactions needed.
+Same as step 5 with `--network electroneum` (then repeat steps 6–8) (records land in this directory). Upstream's scripts skip the direct wiring steps on Ethereum mainnet because a multisig has to execute them; that special case keys off the network name `mainnet`, so on `electroneum` all wiring runs automatically from the single owner wallet — no manual follow-up transactions needed.
 
 ## Reserved names
 
