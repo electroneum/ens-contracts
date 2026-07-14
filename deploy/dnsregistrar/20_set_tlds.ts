@@ -100,7 +100,10 @@ export default deployScript(
     )
     console.log(`  - Processing ${suffixes.length} public suffixes`)
 
-    const batchAmount = allowUnsafe ? 1000 : 25
+    // 1000 enableNode calls do not fit in the fixed 28M gas limit below
+    // (~100k gas each) — the batch runs out of gas and silently reverted
+    // before rocketh checked receipt status. 250 stays safely under it.
+    const batchAmount = allowUnsafe ? 250 : 25
 
     // Send all transactions in batches
     for (let i = 0; i < suffixes.length; i += batchAmount) {
