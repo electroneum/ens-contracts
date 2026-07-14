@@ -103,6 +103,10 @@ cast send <OwnedUsdOracle> 'set(int256)' <newValue> --private-key $OWNER_KEY -r 
 
 Same as step 5 with `--network electroneum` (records land in this directory). Upstream's scripts skip the direct wiring steps on Ethereum mainnet because a multisig has to execute them; that special case keys off the network name `mainnet`, so on `electroneum` all wiring runs automatically from the single owner wallet — no manual follow-up transactions needed.
 
+## Reserved names
+
+`deploy/ethregistrar/06_register_reserved_names.ts` registers the names listed in its `RESERVED_NAMES` constant (currently `wallet.etn` and `pay.etn`) to the **owner account** for 100 years, as part of the pipeline. It registers directly on the base registrar (controller-only, no payment) by temporarily authorising the owner as a registrar controller and revoking it afterwards. The names are ordinary registrar NFTs — renewable, transferable, reclaimable — and can have resolver records set by the owner like any other name. Edit the constant to change the list; the script skips names that are already registered.
+
 ## Notes
 
 - The repo carries two rocketh patches in `patches/` (applied automatically by `bun install`):
