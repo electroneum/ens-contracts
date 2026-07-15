@@ -25,34 +25,34 @@ import {
   ReverseRegistrar,
   StablePriceOracle,
   TestRegistrar,
-} from '@ensdomains/ens-contracts'
+} from '@etn-sc/ens-contracts'
 ```
 
 ## Importing from solidity
 
 ```
 // Registry
-import '@ensdomains/ens-contracts/contracts/registry/ENS.sol';
-import '@ensdomains/ens-contracts/contracts/registry/ENSRegistry.sol';
-import '@ensdomains/ens-contracts/contracts/registry/ENSRegistryWithFallback.sol';
-import '@ensdomains/ens-contracts/contracts/registry/ReverseRegistrar.sol';
-import '@ensdomains/ens-contracts/contracts/registry/TestRegistrar.sol';
+import '@etn-sc/ens-contracts/contracts/registry/ENS.sol';
+import '@etn-sc/ens-contracts/contracts/registry/ENSRegistry.sol';
+import '@etn-sc/ens-contracts/contracts/registry/ENSRegistryWithFallback.sol';
+import '@etn-sc/ens-contracts/contracts/registry/ReverseRegistrar.sol';
+import '@etn-sc/ens-contracts/contracts/registry/TestRegistrar.sol';
 // EthRegistrar
-import '@ensdomains/ens-contracts/contracts/ethregistrar/BaseRegistrar.sol';
-import '@ensdomains/ens-contracts/contracts/ethregistrar/BaseRegistrarImplementation.sol';
-import '@ensdomains/ens-contracts/contracts/ethregistrar/BulkRenewal.sol';
-import '@ensdomains/ens-contracts/contracts/ethregistrar/ETHRegistrarController.sol';
-import '@ensdomains/ens-contracts/contracts/ethregistrar/LinearPremiumPriceOracle.sol';
-import '@ensdomains/ens-contracts/contracts/ethregistrar/PriceOracle.sol';
-import '@ensdomains/ens-contracts/contracts/ethregistrar/StablePriceOracle.sol';
+import '@etn-sc/ens-contracts/contracts/ethregistrar/BaseRegistrar.sol';
+import '@etn-sc/ens-contracts/contracts/ethregistrar/BaseRegistrarImplementation.sol';
+import '@etn-sc/ens-contracts/contracts/ethregistrar/BulkRenewal.sol';
+import '@etn-sc/ens-contracts/contracts/ethregistrar/ETHRegistrarController.sol';
+import '@etn-sc/ens-contracts/contracts/ethregistrar/LinearPremiumPriceOracle.sol';
+import '@etn-sc/ens-contracts/contracts/ethregistrar/PriceOracle.sol';
+import '@etn-sc/ens-contracts/contracts/ethregistrar/StablePriceOracle.sol';
 // Resolvers
-import '@ensdomains/ens-contracts/contracts/resolvers/PublicResolver.sol';
-import '@ensdomains/ens-contracts/contracts/resolvers/Resolver.sol';
+import '@etn-sc/ens-contracts/contracts/resolvers/PublicResolver.sol';
+import '@etn-sc/ens-contracts/contracts/resolvers/Resolver.sol';
 ```
 
 ## Accessing to binary file.
 
-If your environment does not have compiler, you can access to the raw hardhat artifacts files at `node_modules/@ensdomains/ens-contracts/artifacts/contracts/${modName}/${contractName}.sol/${contractName}.json`
+If your environment does not have compiler, you can access to the raw hardhat artifacts files at `node_modules/@etn-sc/ens-contracts/artifacts/contracts/${modName}/${contractName}.sol/${contractName}.json`
 
 ## Contracts
 
@@ -151,7 +151,7 @@ This repo runs a husky precommit to prettify all contract files to keep them con
 ### How to setup
 
 ```
-git clone https://github.com/ensdomains/ens-contracts
+git clone https://github.com/electroneum/ens-contracts
 cd ens-contracts
 bun i
 ```
