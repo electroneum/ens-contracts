@@ -1,6 +1,6 @@
 {
   "name": "@etn-sc/ens-contracts",
-  "version": "1.7.0",
+  "version": "1.7.1",
   "description": "ENS contracts for the Electroneum Smart Chain",
   "type": "module",
   "scripts": {
