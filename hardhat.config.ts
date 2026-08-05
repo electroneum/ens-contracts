@@ -65,7 +65,9 @@ const config = {
     },
     electroneum: {
       type: 'http',
-      url: `https://rpc.ankr.com/electroneum/${process.env.ANKR_API_KEY}`,
+      url:
+        process.env.ELECTRONEUM_RPC_OVERRIDE ||
+        `https://rpc.ankr.com/electroneum/${process.env.ANKR_API_KEY}`,
       chainId: electroneum.id,
       accounts: realAccounts,
     },
