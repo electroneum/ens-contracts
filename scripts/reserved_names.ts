@@ -19,3 +19,11 @@ export const RESERVED_NAMES = [
 ]
 
 export const RESERVATION_DURATION = 100n * 365n * 24n * 60n * 60n // 100 years
+
+// Infrastructure namespace roots, registered after launch (see
+// deploy/ethregistrar/08_register_validator_name.ts). Kept separate from
+// RESERVED_NAMES so the launch migration's behaviour is unchanged; validator
+// identities live as subnames (v1.validators.etn, ...) created by the
+// management wallet — free, impersonation-proof, and renewed with the single
+// parent.
+export const INFRASTRUCTURE_NAMES = ['validators']
