@@ -190,6 +190,20 @@ const config = {
       })
       .setAction(() => import('./tasks/save.js'))
       .build(),
+    task(
+      'transfer-name',
+      'Transfers an unwrapped .etn 2LD (registrant + manager) to a recipient',
+    )
+      .addPositionalArgument({
+        name: 'label',
+        description: 'The bare label to transfer (eg. planetzephyros)',
+      })
+      .addPositionalArgument({
+        name: 'to',
+        description: 'The recipient address (checksummed)',
+      })
+      .setAction(() => import('./tasks/transfer_name.js'))
+      .build(),
     task('seed', 'Creates test subbdomains and wraps them with Namewrapper')
       .addPositionalArgument({
         name: 'name',
