@@ -189,7 +189,7 @@ export default deployScript(
     return true
   },
   {
-    id: 'InfrastructureNames v1.0.0',
+    id: 'InfrastructureNames v1.1.0',
     tags: ['category:ethregistrar', 'InfrastructureNames'],
     dependencies: [
       'BaseRegistrarImplementation',
